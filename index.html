@@ -6,7 +6,6 @@
     <title>النظام المحاسبي السحابي - سكاي بوس</title>
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -27,13 +26,12 @@
         th { background-color: #e9ecef; }
         .total-box { background: #e8f8f5; padding: 15px; border-radius: 6px; text-align: center; font-size: 17px; font-weight: bold; color: #117a65; margin-top: 10px; border: 1px solid #a3e4d7; }
         .hidden { display: none; }
-        .site-card { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e1b12c; margin-bottom: 12px; text-align: right; position: relative; }
-        .site-card-main { cursor: pointer; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-weight: bold; width: 100%; }
+        .site-card { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e1b12c; margin-bottom: 12px; text-align: right; position: relative; cursor: pointer; }
+        .site-card-main { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-weight: bold; width: 100%; }
         .site-card-title { font-size: 18px; color: #2c3e50; display: flex; justify-content: space-between; width: 100%; align-items: center; }
         .site-card-totals { font-size: 13px; color: #444; width: 100%; border-top: 1px dashed #ccc; padding-top: 6px; text-align: right; line-height: 1.4; }
         .welcome-text { color: #e67e22; font-weight: bold; margin-bottom: 5px; font-size: 16px; }
         .live-time { color: #7f8c8d; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
-        .split-box { display: flex; gap: 10px; justify-content: space-between; margin-top: 5px; font-size: 14px; }
         .btn-delete { background-color: #e74c3c; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .btn-edit { background-color: #3498db; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; text-align: right; }
@@ -89,32 +87,23 @@
         </div>
         
         <h2 style="text-align: right; margin-top: 20px;">المواقع النشطة اليوم:</h2>
-        <div id="sites-list-container"></div>
+        <div id="sites-list-container">جاري جلب البيانات من السيرفر المباشر...</div>
         
         <button class="btn-back" style="margin-top: 20px;" onclick="handleLogoutSystem()">تسجيل الخروج</button>
     </div>
 
     <div id="screen-security-dashboard" class="hidden">
         <h1>🛡️ لوحة أمان وحماية الحسابات والدمج</h1>
-        
         <div class="section" style="background-color: #e8f8f5; border: 2px solid #16a085;">
             <h3 style="color: #16a085; margin-top: 0;">📁 إدارة وأرشفة المواقع:</h3>
             <button style="background-color: #16a085; font-size: 15px;" onclick="goToArchiveScreen()">📂 الدخول إلى صفحة أرشفة واسترجاع المواقع</button>
         </div>
-
         <div class="merge-box">
             <h3 style="color: #2980b9; margin-top: 0;">🔀 أداة دمج وتصحيح أسماء العمال المكررة:</h3>
-            <div class="form-group">
-                <label>1️⃣ الاسم الخطأ / المكرر:</label>
-                <input type="text" id="old-worker-name" list="workers-suggest-list" placeholder="الاسم المكرر...">
-            </div>
-            <div class="form-group">
-                <label>2️⃣ الاسم الصحيح المعتمد:</label>
-                <input type="text" id="target-worker-name" list="workers-suggest-list" placeholder="الاسم الصحيح والموحد...">
-            </div>
+            <div class="form-group"><label>1️⃣ الاسم الخطأ / المكرر:</label><input type="text" id="old-worker-name" list="workers-suggest-list" placeholder="الاسم المكرر..."></div>
+            <div class="form-group"><label>2️⃣ الاسم الصحيح المعتمد:</label><input type="text" id="target-worker-name" list="workers-suggest-list" placeholder="الاسم الصحيح والموحد..."></div>
             <button style="background-color: #2980b9; font-size:15px;" onclick="executeMergeWorkers()">🔀 تنفيذ الدمج الآمن ونقل كافة السجلات</button>
         </div>
-
         <div class="security-box">
             <h3 style="color: #d35400; margin-top: 0;">💾 النسخ الاحتياطي التلقائي اليومي</h3>
             <button class="btn-backup-all" onclick="downloadSystemBackup()">📥 تحميل كافة ملفات الحسابات والمواقع تلقائياً</button>
@@ -125,14 +114,8 @@
 
     <div id="screen-archive-dashboard" class="hidden">
         <h1>📂 واجهة أرشفة واسترجاع المواقع</h1>
-        <div class="section">
-            <h3 style="color: #2c3e50; margin-top: 0;">🏗️ المواقع النشطة:</h3>
-            <div id="active-sites-archive-list"></div>
-        </div>
-        <div class="section" style="background-color: #fcf4ff; border: 1px solid #e8ccf4; margin-top: 20px;">
-            <h3 style="color: #8e44ad; margin-top: 0;">📦 المواقع المؤرشفة:</h3>
-            <div id="archived-sites-list"></div>
-        </div>
+        <div class="section"><h3 style="color: #2c3e50; margin-top: 0;">🏗️ المواقع النشطة:</h3><div id="active-sites-archive-list"></div></div>
+        <div class="section" style="background-color: #fcf4ff; border: 1px solid #e8ccf4; margin-top: 20px;"><h3 style="color: #8e44ad; margin-top: 0;">📦 المواقع المؤرشفة:</h3><div id="archived-sites-list"></div></div>
         <button class="btn-back" style="width: 100%; margin-top: 15px;" onclick="goToSecurityScreen()">الرجوع لمركز حماية البيانات</button>
     </div>
 
@@ -266,12 +249,6 @@
     let globalMaterials = [];
     let editingLoanIndex = null;
 
-    // استرجاع البيانات المخزنة محلياً فوراً لمنع الشاشة الفارغة عند الفتح
-    const cachedSites = localStorage.getItem('offline_sites_cache');
-    if (cachedSites) {
-        try { sitesData = JSON.parse(cachedSites); } catch(e){}
-    }
-
     function cleanWorkerName(rawName) {
         if (!rawName) return '';
         let name = rawName.trim().replace(/[.,،\-_]/g, '').replace(/\s+/g, ' ');
@@ -320,7 +297,7 @@
     }
     
     function startCloudSync() {
-        // اتصال هادئ وخلفي بالفايربيس بدون إظهار أي نص انتظار يزعج المستخدم
+        // اتصال مباشر من السيرفر بدون اي تخزين محلي يعكس البيانات على الموبايل
         database.ref().on('value', (snapshot) => {
             const root = snapshot.val() || {}; 
             rawFirebaseData = root;
@@ -346,11 +323,7 @@
                 });
             }
             
-            if(tempSites.length > 0) {
-                sitesData = tempSites;
-                localStorage.setItem('offline_sites_cache', JSON.stringify(sitesData));
-            }
-            
+            sitesData = tempSites;
             globalLoans = root.globalLoans || []; 
             if(typeof globalLoans === 'object' && !Array.isArray(globalLoans)) globalLoans = Object.values(globalLoans);
             
@@ -387,7 +360,6 @@
             }
             applyJardDateLimits(); 
             showScreen('screen-home'); 
-            renderSites();
             startCloudSync();
         }
     };
@@ -763,7 +735,7 @@
     }
 
     function deleteWorker(workerIndex, workerName) {
-        const site = sitesData.find(s => (s.realCard || s.id).toString() === activeSiteId); 
+        const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); 
         if(!site || !confirm(`حذف العامل ${workerName}؟`)) return; 
         let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
         let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
