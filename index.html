@@ -295,7 +295,7 @@
     }
     
     function startCloudSync() {
-        // فحص مرن يطابق بيئة الهواتف والحواسيب بدون أي أخطاء
+        // استخدام مزامنة Firebase العادية مع دعم كامل لمتصفحات الجوال بدون قيود
         database.ref().on('value', (snapshot) => {
             const root = snapshot.val() || {}; 
             rawFirebaseData = root;
