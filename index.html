@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>النظام المحاسبي السحابي - نظام دمج الأسماء المتقدم</title>
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
-    
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -363,11 +360,7 @@
     function startCloudSync() {
         const loadingInd = document.getElementById('loading-indicator');
         
-        // جلب البيانات مع حماية ضد التعليق (Fallback Timeout)
-        let isDataLoaded = false;
-
         database.ref().on('value', (snapshot) => {
-            isDataLoaded = true;
             const root = snapshot.val() || {}; rawFirebaseData = root;
             const data = root.sites; 
             sitesData = [];
@@ -411,17 +404,12 @@
                 if(currentActiveScreen === 'screen-archive-dashboard') { renderArchiveScreenLists(); }
                 if(activeSiteId) renderSiteData(); 
             }
-        }, (error) => {
-            console.error("Firebase error:", error);
-            if(loadingInd) loadingInd.innerText = "⚠️ تعذر الاتصال المباشر، جاري العمل بالوضع المحلي...";
         });
 
-        // إذا تأخر الاتصال أكثر من 3 ثواني، نخفي علامة التحميل فوراً حتى ما توكف الواجهة
+        // حماية تمنع التعليق أكثر من ثانيتين
         setTimeout(() => {
-            if(!isDataLoaded && loadingInd) {
-                loadingInd.classList.add('hidden');
-            }
-        }, 3000);
+            if(loadingInd) loadingInd.classList.add('hidden');
+        }, 2000);
     }
 
     window.onload = function() {
@@ -945,10 +933,6 @@
         let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
 
         wList.splice(workerIndex, 1);
-        const expIndex = eList.findIndex(e => e && e.desc === `نثرية تلقائية للعامل (${workerName})` && isRecordFromToday(e.date)); 
-        if(expIndex !== -1) eList.splice(expIndex, 1); 
-
-        database.ref('sites/' + activeSiteId).update({ workers: wList, expenses: eList });
     }
 </script>
 </body>
