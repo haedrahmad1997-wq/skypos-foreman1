@@ -362,8 +362,10 @@
     
     function startCloudSync() {
         const loadingInd = document.getElementById('loading-indicator');
-        
+        let isLoaded = false;
+
         database.ref().on('value', (snapshot) => {
+            isLoaded = true;
             const root = snapshot.val() || {}; rawFirebaseData = root;
             const data = root.sites; 
             sitesData = [];
@@ -409,8 +411,11 @@
             }
         });
 
+        // حماية تمنع تعليق "جاري جلب البيانات" أكثر من ثانيتين
         setTimeout(() => {
-            if(loadingInd) loadingInd.classList.add('hidden');
+            if(!isLoaded && loadingInd) {
+                loadingInd.classList.add('hidden');
+            }
         }, 2000);
     }
 
@@ -607,7 +612,7 @@
             if(isRecordFromToday(l.date)) { 
                 todayLoansTotal = safeAdd(todayLoansTotal, l.amount); 
                 let editBtn = `<button class="btn-edit" onclick="startEditLoan(${index})">✍️ تعديل</button>`;
-                let delBtn = `<button class="btn-delete" style="padding:6px 12px; font-size:12px; background-color: #e74c3c;" onclick="deleteMainLoan(${index})">❌ حذف الحساب</button>"; 
+                let delBtn = `<button class="btn-delete" style="padding:6px 12px; font-size:12px; background-color: #e74c3c;" onclick="deleteMainLoan(${index})">❌ حذف الحساب</button>`; 
                 loanBody.innerHTML += `<tr><td>${cleanWorkerName(l.worker)}</td><td>${toArabicDisplay(l.amount)}</td><td>${l.by}</td><td>${editBtn}</td><td>${delBtn}</td></tr>`; 
             } 
         });
@@ -903,7 +908,7 @@
     function submitExpense() {
         const desc = document.getElementById('expense-desc').value.trim(); 
         const parsedAmount = cleanAndFormatNumber(document.getElementById('expense-amount').value.trim()); 
-        if(!desc || parsedAmount <= 0) { alert('❌ يرجى كتابة البيان والمبلغ بشكل صحيح الخ...'); return; }
+        if(!desc || parsedAmount <= 0) { alert('❌ يرجى كتابة البيان والمبلغ بشكل صحيح!'); return; }
         if (!activeSiteId) { alert('❌ لم يتم اختيار موقع!'); return; }
         
         const now = new Date().toISOString(); 
