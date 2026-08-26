@@ -32,7 +32,6 @@
         .site-card-totals { font-size: 13px; color: #444; width: 100%; border-top: 1px dashed #ccc; padding-top: 6px; text-align: right; line-height: 1.4; }
         .welcome-text { color: #e67e22; font-weight: bold; margin-bottom: 5px; font-size: 16px; }
         .live-time { color: #7f8c8d; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
-        .loading-text { color: #7f8c8d; font-size: 15px; margin: 10px 0; font-weight: bold; }
         .btn-delete { background-color: #e74c3c; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .btn-edit { background-color: #3498db; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; text-align: right; }
@@ -86,7 +85,6 @@
         </div>
         
         <h2 style="text-align: right; margin-top: 20px;">المواقع النشطة اليوم:</h2>
-        <div id="loading-indicator" class="loading-text">جاري جلب البيانات من السيرفر...</div>
         <div id="sites-list-container"></div>
         
         <button class="btn-back" style="margin-top: 20px;" onclick="handleLogoutSystem()">تسجيل الخروج</button>
@@ -297,9 +295,6 @@
     }
     
     function startCloudSync() {
-        const loadingInd = document.getElementById('loading-indicator');
-        
-        // العودة لمسار sites الصحيح والموثوق 100%
         database.ref().on('value', (snapshot) => {
             const root = snapshot.val() || {}; 
             rawFirebaseData = root;
@@ -334,8 +329,6 @@
             
             updateWorkersSuggestList();
 
-            if(loadingInd) loadingInd.classList.add('hidden');
-
             if(currentUser) { 
                 renderSites(); 
                 if(currentActiveScreen === 'screen-jard-dashboard') { renderJardCheckboxesOnly(); calculateMultiSelectJard(); }
@@ -364,6 +357,7 @@
             }
             applyJardDateLimits(); 
             showScreen('screen-home'); 
+            renderSites();
             startCloudSync();
         }
     };
