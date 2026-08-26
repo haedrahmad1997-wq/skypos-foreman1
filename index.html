@@ -362,31 +362,34 @@
     
     function startCloudSync() {
         const loadingInd = document.getElementById('loading-indicator');
-        let isLoaded = false;
-
+        
+        // التصحيح المهم هنا: جلب البيانات من الجذر بالشكل الصحيح المرتبط بكودك الأصلي
         database.ref().on('value', (snapshot) => {
-            isLoaded = true;
-            const root = snapshot.val() || {}; rawFirebaseData = root;
+            const root = snapshot.val() || {}; 
+            rawFirebaseData = root;
+            
+            // قراءة المواقع بالطريقة الصحيحة التي كانت مدعومة بكودك الأصلي
             const data = root.sites; 
             sitesData = [];
             
             if (data) {
                 Object.keys(data).forEach(key => {
                     let site = data[key];
-                    site.realKey = key;
-                    
-                    if(!site.expenses) site.expenses = []; 
-                    if(!site.workers) site.workers = [];
-                    if(typeof site.expenses === 'object' && !Array.isArray(site.expenses)) site.expenses = Object.values(site.expenses);
-                    if(typeof site.workers === 'object' && !Array.isArray(site.workers)) site.workers = Object.values(site.workers);
-                    
-                    const isDuplicate = sitesData.some(s => 
-                        (s.id && site.id && s.id.toString() === site.id.toString()) || 
-                        (s.name && site.name && s.name.trim() === site.name.trim())
-                    );
+                    if(site) {
+                        site.realKey = key;
+                        if(!site.expenses) site.expenses = []; 
+                        if(!site.workers) site.workers = [];
+                        if(typeof site.expenses === 'object' && !Array.isArray(site.expenses)) site.expenses = Object.values(site.expenses);
+                        if(typeof site.workers === 'object' && !Array.isArray(site.workers)) site.workers = Object.values(site.workers);
+                        
+                        const isDuplicate = sitesData.some(s => 
+                            (s.id && site.id && s.id.toString() === site.id.toString()) || 
+                            (s.name && site.name && s.name.trim() === site.name.trim())
+                        );
 
-                    if (!isDuplicate) {
-                        sitesData.push(site);
+                        if (!isDuplicate) {
+                            sitesData.push(site);
+                        }
                     }
                 });
             }
@@ -411,11 +414,9 @@
             }
         });
 
-        // حماية تمنع تعليق "جاري جلب البيانات" أكثر من ثانيتين
+        // حماية ضد التعليق نهائياً
         setTimeout(() => {
-            if(!isLoaded && loadingInd) {
-                loadingInd.classList.add('hidden');
-            }
+            if(loadingInd) loadingInd.classList.add('hidden');
         }, 2000);
     }
 
