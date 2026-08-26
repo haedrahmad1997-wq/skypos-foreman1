@@ -295,23 +295,20 @@
     }
     
     function startCloudSync() {
-        // فحص شامل ومزدوج يسحب من sites أو من الجذر مباشرة حتى لا تضيع أي موقع أبداً
+        // فحص مرن يطابق بيئة الهواتف والحواسيب بدون أي أخطاء
         database.ref().on('value', (snapshot) => {
             const root = snapshot.val() || {}; 
             rawFirebaseData = root;
             
-            let data = root.sites;
-            if (!data || Object.keys(data).length === 0) {
-                data = root; // إذا كانت البيانات محفوظة مباشرة بالجذر
-            }
-            
+            let rawSites = root.sites || root; 
             let tempSites = [];
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    if (key === 'globalLoans' || key === 'globalMaterials') return;
-                    let site = data[key];
-                    if(site && (site.name || site.id)) {
-                        site.realKey = key;
+            
+            if (rawSites) {
+                let sitesArray = Array.isArray(rawSites) ? rawSites : Object.keys(rawSites).map(k => ({ ...rawSites[k], realKey: k }));
+                
+                sitesArray.forEach(site => {
+                    if (site && (site.name || site.id) && site.realKey !== 'globalLoans' && site.realKey !== 'globalMaterials') {
+                        if(!site.realKey && site.id) site.realKey = site.id.toString();
                         if(!site.expenses) site.expenses = []; 
                         if(!site.workers) site.workers = [];
                         if(typeof site.expenses === 'object' && !Array.isArray(site.expenses)) site.expenses = Object.values(site.expenses);
@@ -363,7 +360,6 @@
             }
             applyJardDateLimits(); 
             showScreen('screen-home'); 
-            renderSites();
             startCloudSync();
         }
     };
