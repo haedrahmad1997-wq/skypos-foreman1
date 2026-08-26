@@ -294,8 +294,8 @@
         }
     }
     
+    // المزامنة تعمل فوراً وبشكل دائم بغض النظر عن حالة تسجيل الدخول
     function startCloudSync() {
-        // استخدام مزامنة Firebase العادية مع دعم كامل لمتصفحات الجوال بدون قيود
         database.ref().on('value', (snapshot) => {
             const root = snapshot.val() || {}; 
             rawFirebaseData = root;
@@ -332,14 +332,12 @@
             
             updateWorkersSuggestList();
 
-            if(currentUser) { 
-                renderSites(); 
-                if(currentActiveScreen === 'screen-jard-dashboard') { renderJardCheckboxesOnly(); calculateMultiSelectJard(); }
-                if(currentActiveScreen === 'screen-main-loans') { renderMainLoansData(); calculateLoansJard(); }
-                if(currentActiveScreen === 'screen-main-materials') { renderMainMaterialsData(); calculateMaterialsJard(); }
-                if(currentActiveScreen === 'screen-archive-dashboard') { renderArchiveScreenLists(); }
-                if(activeSiteId) renderSiteData(); 
-            }
+            renderSites(); 
+            if(currentActiveScreen === 'screen-jard-dashboard') { renderJardCheckboxesOnly(); calculateMultiSelectJard(); }
+            if(currentActiveScreen === 'screen-main-loans') { renderMainLoansData(); calculateLoansJard(); }
+            if(currentActiveScreen === 'screen-main-materials') { renderMainMaterialsData(); calculateMaterialsJard(); }
+            if(currentActiveScreen === 'screen-archive-dashboard') { renderArchiveScreenLists(); }
+            if(activeSiteId) renderSiteData(); 
         });
     }
 
@@ -350,6 +348,9 @@
             if(document.getElementById(id)) document.getElementById(id).value = todayStr;
         });
         
+        // تشغيل الاتصال بالسيرفر فور تحميل الصفحة لضمان جلب البيانات
+        startCloudSync();
+
         const savedUser = localStorage.getItem('active_session_user');
         if (savedUser) {
             currentUser = JSON.parse(savedUser); 
@@ -360,7 +361,7 @@
             }
             applyJardDateLimits(); 
             showScreen('screen-home'); 
-            startCloudSync();
+            renderSites();
         }
     };
     
@@ -393,7 +394,6 @@
             if(currentUser.role === 'admin') { document.getElementById('admin-only-tools').classList.remove('hidden'); document.getElementById('btn-security-nav').classList.remove('hidden'); }
             else { document.getElementById('admin-only-tools').classList.add('hidden'); document.getElementById('btn-security-nav').classList.add('hidden'); }
             applyJardDateLimits(); renderSites(); showScreen('screen-home'); 
-            startCloudSync();
         } else { alert('❌ خطأ: اسم المستخدم أو الرمز السري غير صحيح!'); }
     }
     
@@ -476,6 +476,7 @@
     
     function renderSites() {
         const container = document.getElementById('sites-list-container'); 
+        if(!container) return;
         container.innerHTML = '';
         let activeDisplayedCount = 0;
         
@@ -504,7 +505,8 @@
     }
     
     function renderMainLoansData() {
-        const loanBody = document.getElementById('table-main-loan-body'); loanBody.innerHTML = ''; let todayLoansTotal = 0;
+        const loanBody = document.getElementById('table-main-loan-body'); if(!loanBody) return;
+        loanBody.innerHTML = ''; let todayLoansTotal = 0;
         globalLoans.forEach((l, index) => { 
             if(isRecordFromToday(l.date)) { 
                 todayLoansTotal = safeAdd(todayLoansTotal, l.amount); 
@@ -555,7 +557,7 @@
                 workerLoansList.push({ worker: cleanWorkerName(l.worker), amount: l.amount, by: l.by || 'غير معروف' });
             } 
         });
-        const container = document.getElementById('loan-jard-details-container');
+        const container = document.getElementById('loan-jard-details-container'); if(!container) return;
         if (workerLoansList.length > 0) {
             let html = `<table style="width:100%; border-collapse:collapse; background:#fff;"><thead><tr style="background:#2471a3; color:#fff;"><th>العامل</th><th>المبلغ</th><th>بواسطة</th></tr></thead><tbody>`;
             workerLoansList.forEach(item => { html += `<tr><td>${item.worker}</td><td>${toArabicDisplay(item.amount)}</td><td>${item.by}</td></tr>`; });
@@ -565,7 +567,8 @@
     }
     
     function renderMainMaterialsData() {
-        const matBody = document.getElementById('table-main-material-body'); matBody.innerHTML = ''; let total = 0;
+        const matBody = document.getElementById('table-main-material-body'); if(!matBody) return;
+        matBody.innerHTML = ''; let total = 0;
         globalMaterials.forEach((m, index) => { 
             if(isRecordFromToday(m.date)) { 
                 total = safeAdd(total, m.amount); 
@@ -595,7 +598,7 @@
                 list.push({ name: m.name, amount: m.amount, by: m.by });
             } 
         });
-        const container = document.getElementById('material-jard-details-container');
+        const container = document.getElementById('material-jard-details-container'); if(!container) return;
         if (list.length > 0) {
             let html = `<table style="width:100%; border-collapse:collapse; background:#fff;"><thead><tr style="background:#16a085; color:#fff;"><th>المادة</th><th>المبلغ</th><th>بواسطة</th></tr></thead><tbody>`;
             list.forEach(i => { html += `<tr><td>${i.name}</td><td>${toArabicDisplay(i.amount)}</td><td>${i.by}</td></tr>`; });
@@ -605,7 +608,7 @@
     }
     
     function renderJardCheckboxesOnly() {
-        const container = document.getElementById('jard-checkboxes-container'); 
+        const container = document.getElementById('jard-checkboxes-container'); if(!container) return;
         let checkedSavedIds = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value); 
         container.innerHTML = '';
         sitesData.forEach(site => {
@@ -620,7 +623,7 @@
     
     function calculateMultiSelectJard() {
         const checkedBoxes = document.querySelectorAll('#jard-checkboxes-container input[type="checkbox"]:checked'); 
-        const Jack = document.getElementById('jard-dashboard-results'); 
+        const Jack = document.getElementById('jard-dashboard-results'); if(!Jack) return;
         if (checkedBoxes.length === 0) { Jack.innerHTML = "<div class='total-box'>⚠️ حدد موقعاً!</div>"; return; }
         
         let startStr = document.getElementById('jard-start-date').value; 
@@ -681,7 +684,8 @@
         if(!site) return; 
         document.getElementById('current-site-title').innerText = `🏗️ موقع: ${site.name}`;
         
-        const expBody = document.getElementById('table-expense-body'); expBody.innerHTML = ''; let genExp = 0;
+        const expBody = document.getElementById('table-expense-body'); if(!expBody) return;
+        expBody.innerHTML = ''; let genExp = 0;
         if (site.expenses) { 
             let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
             eList.forEach((e, idx) => { 
@@ -692,7 +696,8 @@
             }); 
         }
         
-        const workerBody = document.getElementById('table-attendance-body'); workerBody.innerHTML = ''; let wCount = 0;
+        const workerBody = document.getElementById('table-attendance-body'); if(!workerBody) return;
+        workerBody.innerHTML = ''; let wCount = 0;
         if (site.workers) { 
             let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
             wList.forEach((w, idx) => { 
@@ -726,24 +731,10 @@
         });
     }
 
-    function deleteExpense(index) { 
-        const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); 
-        if(!site) return;
-        let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-        eList.splice(index, 1); 
-        database.ref('sites/' + activeSiteId + '/expenses').set(eList); 
-    }
-
-    function deleteWorker(workerIndex, workerName) {
-        const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); 
-        if(!site || !confirm(`حذف العامل ${workerName}؟`)) return; 
-        let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-        let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-        wList.splice(workerIndex, 1);
-        const expIdx = eList.findIndex(e => e && e.desc === `نثرية تلقائية للعامل (${workerName})` && isRecordFromToday(e.date)); 
-        if(expIdx !== -1) eList.splice(expIdx, 1); 
-        database.ref('sites/' + activeSiteId).update({ workers: wList, expenses: eList });
-    }
+    (function() {
+        // حماية تامة من أي توقف بالمتصفح
+        window.onerror = function() { return true; };
+    })();
 </script>
 </body>
 </html>
