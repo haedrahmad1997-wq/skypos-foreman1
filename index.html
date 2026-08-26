@@ -295,16 +295,22 @@
     }
     
     function startCloudSync() {
+        // فحص شامل ومزدوج يسحب من sites أو من الجذر مباشرة حتى لا تضيع أي موقع أبداً
         database.ref().on('value', (snapshot) => {
             const root = snapshot.val() || {}; 
             rawFirebaseData = root;
-            const data = root.sites; 
-            let tempSites = [];
             
+            let data = root.sites;
+            if (!data || Object.keys(data).length === 0) {
+                data = root; // إذا كانت البيانات محفوظة مباشرة بالجذر
+            }
+            
+            let tempSites = [];
             if (data) {
                 Object.keys(data).forEach(key => {
+                    if (key === 'globalLoans' || key === 'globalMaterials') return;
                     let site = data[key];
-                    if(site) {
+                    if(site && (site.name || site.id)) {
                         site.realKey = key;
                         if(!site.expenses) site.expenses = []; 
                         if(!site.workers) site.workers = [];
