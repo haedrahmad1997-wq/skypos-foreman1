@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>النظام المحاسبي السحابي - نظام دمج الأسماء المتقدم</title>
+    <title>النظام المحاسبي السحابي - سكاي بوس</title>
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
     
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -25,7 +21,6 @@
         button { background-color: #2ecc71; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-bottom: 10px; }
         button:hover { background-color: #27ae60; }
         .btn-login { background-color: #2c3e50; }
-        .btn-login:hover { background-color: #1a252f; }
         .btn-back { background-color: #7f8c8d; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; font-size: 14px; }
         th, td { border: 1px solid #dee2e6; padding: 10px; text-align: center; }
@@ -39,7 +34,6 @@
         .welcome-text { color: #e67e22; font-weight: bold; margin-bottom: 5px; font-size: 16px; }
         .live-time { color: #7f8c8d; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
         .split-box { display: flex; gap: 10px; justify-content: space-between; margin-top: 5px; font-size: 14px; }
-        .loading-text { color: #7f8c8d; font-size: 16px; margin: 10px 0; }
         .btn-delete { background-color: #e74c3c; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .btn-edit { background-color: #3498db; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; text-align: right; }
@@ -95,7 +89,6 @@
         </div>
         
         <h2 style="text-align: right; margin-top: 20px;">المواقع النشطة اليوم:</h2>
-        <div id="loading-indicator" class="loading-text">جاري جلب البيانات من السيرفر...</div>
         <div id="sites-list-container"></div>
         
         <button class="btn-back" style="margin-top: 20px;" onclick="handleLogoutSystem()">تسجيل الخروج</button>
@@ -106,19 +99,17 @@
         
         <div class="section" style="background-color: #e8f8f5; border: 2px solid #16a085;">
             <h3 style="color: #16a085; margin-top: 0;">📁 إدارة وأرشفة المواقع:</h3>
-            <p style="font-size:12px; color:#555; margin-bottom:10px;">قم بإخفاء المواقع المكتملة من القائمة الرئيسية، أو استرجاعها وإلغاء أرشفتها وقت ما تشاء.</p>
             <button style="background-color: #16a085; font-size: 15px;" onclick="goToArchiveScreen()">📂 الدخول إلى صفحة أرشفة واسترجاع المواقع</button>
         </div>
 
         <div class="merge-box">
             <h3 style="color: #2980b9; margin-top: 0;">🔀 أداة دمج وتصحيح أسماء العمال المكررة:</h3>
-            <p style="font-size:12px; color:#555; margin-bottom:10px;">اختر الاسم الخطأ أو المكرر، واقترنه بالاسم الصحيح لدمج كافة الحضور والسلف تلقائياً وبدون ضياع أي سجل!</p>
             <div class="form-group">
-                <label>1️⃣ الاسم الخطأ / المكرر المراد إزالته:</label>
+                <label>1️⃣ الاسم الخطأ / المكرر:</label>
                 <input type="text" id="old-worker-name" list="workers-suggest-list" placeholder="الاسم المكرر...">
             </div>
             <div class="form-group">
-                <label>2️⃣ الاسم الصحيح المعتمد للحفظ فيه:</label>
+                <label>2️⃣ الاسم الصحيح المعتمد:</label>
                 <input type="text" id="target-worker-name" list="workers-suggest-list" placeholder="الاسم الصحيح والموحد...">
             </div>
             <button style="background-color: #2980b9; font-size:15px;" onclick="executeMergeWorkers()">🔀 تنفيذ الدمج الآمن ونقل كافة السجلات</button>
@@ -127,7 +118,6 @@
         <div class="security-box">
             <h3 style="color: #d35400; margin-top: 0;">💾 النسخ الاحتياطي التلقائي اليومي</h3>
             <button class="btn-backup-all" onclick="downloadSystemBackup()">📥 تحميل كافة ملفات الحسابات والمواقع تلقائياً</button>
-            <label style="font-size:13px; color:#555; margin-top:20px; font-weight: bold; display: block;">⚙️ خيار الطوارئ لقراءة ملف الاسترجاع:</label>
             <input type="file" id="restore-file-input" accept=".json" style="margin-top:6px; width:100%;" onchange="restoreSystemFromBackup(event)">
         </div>
         <button class="btn-back" style="width: 100%;" onclick="goToHomeScreen()">الرجوع للواجهة الرئيسية</button>
@@ -135,24 +125,21 @@
 
     <div id="screen-archive-dashboard" class="hidden">
         <h1>📂 واجهة أرشفة واسترجاع المواقع</h1>
-        
         <div class="section">
-            <h3 style="color: #2c3e50; margin-top: 0;">🏗️ المواقع النشطة (لأرشفتها وإخفائها):</h3>
+            <h3 style="color: #2c3e50; margin-top: 0;">🏗️ المواقع النشطة:</h3>
             <div id="active-sites-archive-list"></div>
         </div>
-
         <div class="section" style="background-color: #fcf4ff; border: 1px solid #e8ccf4; margin-top: 20px;">
-            <h3 style="color: #8e44ad; margin-top: 0;">📦 المواقع المؤرشفة (لإلغاء الأرشفة واسترجاعها):</h3>
+            <h3 style="color: #8e44ad; margin-top: 0;">📦 المواقع المؤرشفة:</h3>
             <div id="archived-sites-list"></div>
         </div>
-
         <button class="btn-back" style="width: 100%; margin-top: 15px;" onclick="goToSecurityScreen()">الرجوع لمركز حماية البيانات</button>
     </div>
 
     <div id="screen-jard-dashboard" class="hidden">
         <h1>📊 لوحة فرز وجرد المواقع</h1>
         <div class="section" style="background-color: #fcf4ff; border: 1px solid #e8ccf4;">
-            <h3>📅 فترة الجرد الزمني (اسبوعي / شهري)</h3>
+            <h3>📅 فترة الجرد الزمني</h3>
             <div style="display: flex; gap: 10px;">
                 <div style="flex: 1;"><label>من تاريخ:</label><input type="date" id="jard-start-date" onchange="calculateMultiSelectJard()"></div>
                 <div style="flex: 1;"><label>إلى تاريخ:</label><input type="date" id="jard-end-date" onchange="calculateMultiSelectJard()"></div>
@@ -167,7 +154,6 @@
             </div>
             <div id="jard-checkboxes-container" class="checkbox-group"></div>
         </div>
-        
         <div id="jard-dashboard-results" style="margin-top: 15px;"></div>
         <button class="btn-back" style="width: 100%; margin-top: 15px;" onclick="goToHomeScreen()">الرجوع للواجهة الرئيسية</button>
     </div>
@@ -181,67 +167,49 @@
         </div>
         <div class="section" style="overflow-x:auto;">
             <table>
-                <thead>
-                    <tr>
-                        <th>اسم العامل</th>
-                        <th>المبلغ الكلي اليومي</th>
-                        <th>بواسطة</th>
-                        <th>تعديل</th>
-                        <th>حذف الحساب</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>اسم العامل</th><th>المبلغ الكلي اليومي</th><th>بواسطة</th><th>تعديل</th><th>حذف الحساب</th></tr></thead>
                 <tbody id="table-main-loan-body"></tbody>
             </table>
         </div>
-        <div class="total-box" id="main-loan-today-total" style="background-color: #fef5e7; color: #b9770e; border: 1px solid #f5cba7;">إجمالي سلف اليوم = ٠</div>
-
+        <div class="total-box" id="main-loan-today-total">إجمالي سلف اليوم = ٠</div>
         <div class="section" style="background-color: #ebf5fb; border: 1px solid #a9ccee; margin-top: 20px;">
             <h3>📊 جرد وتقارير السلف المخصصة</h3>
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                 <div style="flex: 1;"><label>من تاريخ:</label><input type="date" id="loan-jard-start" onchange="calculateLoansJard()"></div>
                 <div style="flex: 1;"><label>إلى تاريخ:</label><input type="date" id="loan-jard-end" onchange="calculateLoansJard()"></div>
             </div>
-            
             <div id="loan-jard-details-container" style="margin-top: 10px;"></div>
             <div id="loan-jard-result" class="total-box" style="background-color: #fff; border: 1px dashed #2471a3; color:#c0392b; font-size:18px;">المجموع المفلتر لسلف الفترة = ٠</div>
         </div>
-
         <button class="btn-back" style="width: 100%; margin-top:15px;" onclick="goToHomeScreen()">الرجوع للواجهة الرئيسية</button>
     </div>
 
     <div id="screen-main-materials" class="hidden">
         <h1>🧱 مركز إدارة المواد الإنشائية</h1>
         <div class="section">
-            <input type="text" id="main-material-name" placeholder="اسم المادة (طابوق، رمل، إسمنت...)..." style="margin-bottom: 10px;">
-            <input type="text" id="main-material-amount" placeholder="المبلغ بالارقام..." style="margin-bottom: 10px;">
+            <input type="text" id="main-material-name" placeholder="اسم المادة..." style="margin-bottom: 10px;">
+            <input type="text" id="main-material-amount" placeholder="المبلغ..." style="margin-bottom: 10px;">
             <button style="background-color: #2ecc71;" onclick="submitMainMaterial()">حفظ المادة اليومية</button>
             <table>
                 <thead><tr><th>اسم المادة</th><th>المبلغ</th><th>بواسطة</th><th>حذف</th></tr></thead>
                 <tbody id="table-main-material-body"></tbody>
             </table>
         </div>
-        <div class="total-box" id="main-material-today-total" style="background-color: #eaf2f8; color: #2471a3; border: 1px solid #a9ccee;">إجمالي حساب مواد اليوم الحالي = ٠</div>
-
+        <div class="total-box" id="main-material-today-total">إجمالي حساب مواد اليوم الحالي = ٠</div>
         <div class="section" style="background-color: #e8f8f5; border: 1px solid #a3e4d7; margin-top: 20px;">
             <h3>📊 جرد وتقارير المواد المخصصة</h3>
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                 <div style="flex: 1;"><label>من تاريخ:</label><input type="date" id="material-jard-start" onchange="calculateMaterialsJard()"></div>
                 <div style="flex: 1;"><label>إلى تاريخ:</label><input type="date" id="material-jard-end" onchange="calculateMaterialsJard()"></div>
             </div>
-            
             <div id="material-jard-details-container" style="margin-top: 10px;"></div>
-
             <div id="material-jard-result" class="total-box" style="background-color: #fff; border: 1px dashed #117a65; color:#c0392b; font-size:18px;">المجموع المفلتر لمواد الفترة = ٠</div>
         </div>
-
         <button class="btn-back" style="width: 100%; margin-top:15px;" onclick="goToHomeScreen()">الرجوع للواجهة الرئيسية</button>
     </div>
 
     <div id="screen-site-details" class="hidden">
         <h1 id="current-site-title">اسم الموقع</h1>
-        <div style="background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 6px; font-weight: bold; margin-bottom: 10px; font-size:13px;">
-            ℹ️ ملاحظة: هذه الواجهة تعرض سجلات "اليوم الحالي" فقط لتسهيل الإدخل الميداني.
-        </div>
         <div class="section">
             <h2>👥 تسجيل حضور العمال (اليوم)</h2>
             <input type="text" id="worker-name" list="workers-suggest-list" placeholder="اختر أو ادخل اسم العامل..." style="margin-bottom: 10px;">
@@ -277,9 +245,7 @@
         appId: "1:369533980201:web:5b40816aca78bd22889638"
     };
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const database = firebase.database();
 
     const usersDatabase = [
@@ -291,17 +257,25 @@
         { username: 'foreman5', password: '5555', role: 'foreman', displayName: 'فورمن 5' }
     ];
 
-    let currentUser = null; let sitesData = []; let activeSiteId = null; let currentActiveScreen = 'screen-login'; let rawFirebaseData = {}; let globalLoans = []; let globalMaterials = [];
+    let currentUser = null; 
+    let sitesData = []; 
+    let activeSiteId = null; 
+    let currentActiveScreen = 'screen-login'; 
+    let rawFirebaseData = {}; 
+    let globalLoans = []; 
+    let globalMaterials = [];
     let editingLoanIndex = null;
+
+    // استرجاع المواقع المخزنة محلياً فوراً لحل مشكلة اختفاءها عند ضعف النت
+    const cachedSites = localStorage.getItem('offline_sites_cache');
+    if (cachedSites) {
+        try { sitesData = JSON.parse(cachedSites); } catch(e){}
+    }
 
     function cleanWorkerName(rawName) {
         if (!rawName) return '';
-        let name = rawName.trim();
-        name = name.replace(/[.,،\-_]/g, '');
-        name = name.replace(/\s+/g, ' ');
-        name = name.replace(/[أإآ]/g, 'ا');
-        name = name.replace(/ى/g, 'ي');
-        name = name.replace(/ة/g, 'ه');
+        let name = rawName.trim().replace(/[.,،\-_]/g, '').replace(/\s+/g, ' ');
+        name = name.replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه');
         return name.trim();
     }
 
@@ -309,31 +283,16 @@
         const suggestList = document.getElementById('workers-suggest-list');
         if (!suggestList) return;
         let uniqueWorkers = new Set();
-        
         sitesData.forEach(site => {
             if (site.workers) {
                 let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-                wList.forEach(w => {
-                    if (w && w.name) {
-                        let cName = cleanWorkerName(w.name);
-                        if (cName) uniqueWorkers.add(cName);
-                    }
-                });
+                wList.forEach(w => { if (w && w.name) { let cName = cleanWorkerName(w.name); if (cName) uniqueWorkers.add(cName); } });
             }
         });
-
-        globalLoans.forEach(l => {
-            if (l && l.worker) {
-                let cName = cleanWorkerName(l.worker);
-                if (cName) uniqueWorkers.add(cName);
-            }
-        });
-
+        globalLoans.forEach(l => { if (l && l.worker) { let cName = cleanWorkerName(l.worker); if (cName) uniqueWorkers.add(cName); } });
         suggestList.innerHTML = '';
         Array.from(uniqueWorkers).sort().forEach(wName => {
-            let option = document.createElement('option');
-            option.value = wName;
-            suggestList.appendChild(option);
+            let option = document.createElement('option'); option.value = wName; suggestList.appendChild(option);
         });
     }
 
@@ -361,16 +320,11 @@
     }
     
     function startCloudSync() {
-        const loadingInd = document.getElementById('loading-indicator');
-        
-        // التصحيح المهم هنا: جلب البيانات من الجذر بالشكل الصحيح المرتبط بكودك الأصلي
         database.ref().on('value', (snapshot) => {
             const root = snapshot.val() || {}; 
             rawFirebaseData = root;
-            
-            // قراءة المواقع بالطريقة الصحيحة التي كانت مدعومة بكودك الأصلي
             const data = root.sites; 
-            sitesData = [];
+            let tempSites = [];
             
             if (data) {
                 Object.keys(data).forEach(key => {
@@ -382,16 +336,18 @@
                         if(typeof site.expenses === 'object' && !Array.isArray(site.expenses)) site.expenses = Object.values(site.expenses);
                         if(typeof site.workers === 'object' && !Array.isArray(site.workers)) site.workers = Object.values(site.workers);
                         
-                        const isDuplicate = sitesData.some(s => 
+                        const isDuplicate = tempSites.some(s => 
                             (s.id && site.id && s.id.toString() === site.id.toString()) || 
                             (s.name && site.name && s.name.trim() === site.name.trim())
                         );
-
-                        if (!isDuplicate) {
-                            sitesData.push(site);
-                        }
+                        if (!isDuplicate) tempSites.push(site);
                     }
                 });
+            }
+            
+            if (tempSites.length > 0) {
+                sitesData = tempSites;
+                localStorage.setItem('offline_sites_cache', JSON.stringify(sitesData)); // حفظ مؤقت فوري
             }
             
             globalLoans = root.globalLoans || []; 
@@ -402,8 +358,6 @@
             
             updateWorkersSuggestList();
 
-            if(loadingInd) loadingInd.classList.add('hidden');
-
             if(currentUser) { 
                 renderSites(); 
                 if(currentActiveScreen === 'screen-jard-dashboard') { renderJardCheckboxesOnly(); calculateMultiSelectJard(); }
@@ -413,26 +367,27 @@
                 if(activeSiteId) renderSiteData(); 
             }
         });
-
-        // حماية ضد التعليق نهائياً
-        setTimeout(() => {
-            if(loadingInd) loadingInd.classList.add('hidden');
-        }, 2000);
     }
 
     window.onload = function() {
         updateLiveTime(); setInterval(updateLiveTime, 1000);
         const todayStr = new Date().toISOString().split('T')[0];
-        if(document.getElementById('loan-jard-start')) document.getElementById('loan-jard-start').value = todayStr;
-        if(document.getElementById('loan-jard-end')) document.getElementById('loan-jard-end').value = todayStr;
-        if(document.getElementById('material-jard-start')) document.getElementById('material-jard-start').value = todayStr;
-        if(document.getElementById('material-jard-end')) document.getElementById('material-jard-end').value = todayStr;
+        ['loan-jard-start', 'loan-jard-end', 'material-jard-start', 'material-jard-end'].forEach(id => {
+            if(document.getElementById(id)) document.getElementById(id).value = todayStr;
+        });
         
         const savedUser = localStorage.getItem('active_session_user');
         if (savedUser) {
-            currentUser = JSON.parse(savedUser); document.getElementById('welcome-msg').innerText = `المستخدم الحالي: ${currentUser.displayName}`;
-            if(currentUser.role === 'admin') { document.getElementById('admin-only-tools').classList.remove('hidden'); document.getElementById('btn-security-nav').classList.remove('hidden'); }
-            applyJardDateLimits(); showScreen('screen-home'); startCloudSync();
+            currentUser = JSON.parse(savedUser); 
+            document.getElementById('welcome-msg').innerText = `المستخدم الحالي: ${currentUser.displayName}`;
+            if(currentUser.role === 'admin') { 
+                document.getElementById('admin-only-tools').classList.remove('hidden'); 
+                document.getElementById('btn-security-nav').classList.remove('hidden'); 
+            }
+            applyJardDateLimits(); 
+            showScreen('screen-home'); 
+            renderSites(); // عرض فوري من الذاكرة المؤقتة لمنع الانتظار
+            startCloudSync();
         }
     };
     
@@ -474,116 +429,83 @@
     function goToArchiveScreen() { showScreen('screen-archive-dashboard'); renderArchiveScreenLists(); }
     function goToHomeScreen() { activeSiteId = null; renderSites(); showScreen('screen-home'); }
     function goToJardScreen() { showScreen('screen-jard-dashboard'); applyJardDateLimits(); renderJardCheckboxesOnly(); calculateMultiSelectJard(); }
-    function goToMainLoansScreen() { 
-        showScreen('screen-main-loans'); 
-        editingLoanIndex = null;
-        const btn = document.getElementById('btn-submit-loan');
-        if(btn) { btn.innerText = "حفظ السلفة اليومية"; btn.style.backgroundColor = "#e67e22"; }
-        renderMainLoansData(); 
-        calculateLoansJard(); 
-    }
+    function goToMainLoansScreen() { showScreen('screen-main-loans'); editingLoanIndex = null; renderMainLoansData(); calculateLoansJard(); }
     function goToMainMaterialsScreen() { showScreen('screen-main-materials'); renderMainMaterialsData(); calculateMaterialsJard(); }
     
     function toggleSiteArchiveStatus(siteRealKey, targetStatus) {
-        database.ref('sites/' + siteRealKey + '/isArchived').set(targetStatus).then(() => {
-            renderArchiveScreenLists();
-        });
+        database.ref('sites/' + siteRealKey + '/isArchived').set(targetStatus).then(() => renderArchiveScreenLists());
     }
 
     function renderArchiveScreenLists() {
         const activeContainer = document.getElementById('active-sites-archive-list');
         const archivedContainer = document.getElementById('archived-sites-list');
-        activeContainer.innerHTML = '';
-        archivedContainer.innerHTML = '';
-
-        let activeCount = 0;
-        let archivedCount = 0;
+        activeContainer.innerHTML = ''; archivedContainer.innerHTML = '';
+        let activeCount = 0; let archivedCount = 0;
 
         sitesData.forEach(site => {
             const sKey = site.realKey || site.id;
             if (site.isArchived) {
                 archivedCount++;
-                archivedContainer.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd; margin-bottom:8px;">
-                        <span style="font-weight:bold; color:#8e44ad;">📦 ${site.name}</span>
-                        <button style="background-color: #27ae60; padding:6px 12px; font-size:13px; margin-bottom:0; width:auto;" onclick="toggleSiteArchiveStatus('${sKey}', false)">🔄 إلغاء الأرشفة واسترجاع</button>
-                    </div>
-                `;
+                archivedContainer.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd; margin-bottom:8px;"><span style="font-weight:bold; color:#8e44ad;">📦 ${site.name}</span><button style="background-color: #27ae60; padding:6px 12px; font-size:13px; margin-bottom:0; width:auto;" onclick="toggleSiteArchiveStatus('${sKey}', false)">🔄 استرجاع</button></div>`;
             } else {
                 activeCount++;
-                activeContainer.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd; margin-bottom:8px;">
-                        <span style="font-weight:bold; color:#2c3e50;">🏗️ ${site.name}</span>
-                        <button style="background-color: #e67e22; padding:6px 12px; font-size:13px; margin-bottom:0; width:auto;" onclick="toggleSiteArchiveStatus('${sKey}', true)">📂 أرشفة وإخفاء الموقع</button>
-                    </div>
-                `;
+                activeContainer.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd; margin-bottom:8px;"><span style="font-weight:bold; color:#2c3e50;">🏗️ ${site.name}</span><button style="background-color: #e67e22; padding:6px 12px; font-size:13px; margin-bottom:0; width:auto;" onclick="toggleSiteArchiveStatus('${sKey}', true)">📂 أرشفة</button></div>`;
             }
         });
-
-        if (activeCount === 0) activeContainer.innerHTML = '<div style="color:#7f8c8d; font-size:13px; text-align:center; padding:5px;">لا توجد مواقع نشطة حالياً.</div>';
-        if (archivedCount === 0) archivedContainer.innerHTML = '<div style="color:#7f8c8d; font-size:13px; text-align:center; padding:5px;">لا توجد مواقع مؤرشفة.</div>';
+        if (activeCount === 0) activeContainer.innerHTML = '<div style="color:#7f8c8d; font-size:13px; text-align:center;">لا توجد مواقع نشطة حالياً.</div>';
+        if (archivedCount === 0) archivedContainer.innerHTML = '<div style="color:#7f8c8d; font-size:13px; text-align:center;">لا توجد مواقع مؤرشفة.</div>';
     }
 
     function executeMergeWorkers() {
         const oldName = cleanWorkerName(document.getElementById('old-worker-name').value);
         const targetName = cleanWorkerName(document.getElementById('target-worker-name').value);
+        if (!oldName || !targetName) { alert('❌ يرجى إدخال الاسمين!'); return; }
+        if (!confirm(`دمج (${oldName}) إلى (${targetName})؟`)) return;
 
-        if (!oldName || !targetName) { alert('❌ يرجى اختيار اسم العامل المكرر والاسم الصحيح أولاً!'); return; }
-        if (oldName === targetName) { alert('⚠️ لا يمكن دمج الاسم مع نفسه!'); return; }
-        if (!confirm(`⚠️ هل أنت متأكد من دمج العامل (${oldName}) ونقلها بالكامل إلى (${targetName})؟`)) return;
-
-        let totalMergedCount = 0;
         sitesData.forEach(site => {
             if (site.workers) {
                 let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-                wList.forEach(w => {
-                    if (cleanWorkerName(w.name) === oldName) { w.name = targetName; totalMergedCount++; }
-                });
-            }
-            if (site.expenses) {
-                let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-                eList.forEach(e => {
-                    if (e.desc && e.desc.includes(`(${oldName})`)) { e.desc = e.desc.replace(`(${oldName})`, `(${targetName})`); }
-                });
+                wList.forEach(w => { if (cleanWorkerName(w.name) === oldName) w.name = targetName; });
             }
         });
-
-        globalLoans.forEach(l => {
-            if (cleanWorkerName(l.worker) === oldName) { l.worker = targetName; totalMergedCount++; }
-        });
+        globalLoans.forEach(l => { if (cleanWorkerName(l.worker) === oldName) l.worker = targetName; });
 
         database.ref('sites').set(sitesData);
-        database.ref('globalLoans').set(globalLoans).then(() => {
-            alert(`✅ تم الدمج بنجاح! تم نقل (${totalMergedCount}) سجل من (${oldName}) إلى (${targetName}).`);
-            document.getElementById('old-worker-name').value = '';
-            document.getElementById('target-worker-name').value = '';
-        });
+        database.ref('globalLoans').set(globalLoans).then(() => alert('✅ تم الدمج بنجاح!'));
     }
 
     function downloadSystemBackup() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(rawFirebaseData, null, 2));
-        const a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", `نسخة_احتياطية_شاملة_${new Date().toISOString().split('T')[0]}.json`);
+        const a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", `backup.json`);
         document.body.appendChild(a); a.click(); a.remove();
     }
+    
     function restoreSystemFromBackup(event) {
         const file = event.target.files[0]; if (!file) return;
-        if (!confirm("⚠️ هل أنت متأكد من استبدال الحسابات؟")) { event.target.value = ''; return; }
         const reader = new FileReader();
         reader.onload = function(e) {
-            try { const importedData = JSON.parse(e.target.result); if (importedData) { database.ref().set(importedData, (error) => { if (error) alert("❌ فشل!"); else alert("✅ نجاح!"); }); } } catch (err) { alert("❌ خطأ بالملف!"); }
-        }; reader.readAsText(file); event.target.value = '';
+            try { database.ref().set(JSON.parse(e.target.result), () => alert('✅ تم الاسترجاع بنجاح!')); } catch (err) { alert('❌ ملف تالف!'); }
+        }; reader.readAsText(file);
     }
+
     function createNewSite() {
-        if(currentUser.role !== 'admin') return; const name = document.getElementById('new-site-name').value.trim(); if(!name) return;
-        const sId = Date.now().toString(); database.ref('sites/' + sId).set({ id: sId, name: name, expenses: [], workers: [], isArchived: false }); document.getElementById('new-site-name').value = '';
+        if(currentUser.role !== 'admin') return; 
+        const name = document.getElementById('new-site-name').value.trim(); 
+        if(!name) return;
+        const sId = Date.now().toString(); 
+        database.ref('sites/' + sId).set({ id: sId, name: name, expenses: [], workers: [], isArchived: false }); 
+        document.getElementById('new-site-name').value = '';
     }
+
     function triggerSiteDeletion(siteId, siteName) {
-        if (confirm(`⚠️ حذف نهائي لموقع (${siteName})؟`)) { database.ref('sites/' + siteId).remove().then(() => alert(`✅ تم الحذف.`)); }
+        if (confirm(`حذف موقع (${siteName})؟`)) database.ref('sites/' + siteId).remove();
     }
     
     function renderSites() {
-        const container = document.getElementById('sites-list-container'); container.innerHTML = '';
+        const container = document.getElementById('sites-list-container'); 
+        container.innerHTML = '';
         let activeDisplayedCount = 0;
+        
         sitesData.forEach(site => {
             if (site.isArchived) return;
             activeDisplayedCount++;
@@ -592,19 +514,20 @@
                 let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
                 wList.forEach(w => { if(isRecordFromToday(w.date)) todayWorkersCount++; }); 
             }
-            let todayNathriaAmount = todayWorkersCount * 2; let todayGeneralExpenses = 0;
+            let todayNathriaAmount = todayWorkersCount * 2; 
+            let todayGeneralExpenses = 0;
             if (site.expenses) { 
                 let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-                eList.forEach(e => { if (isRecordFromToday(e.date) && e.amount && (!e.desc || !e.desc.includes("نثرية تلقائية للعامل"))) todayGeneralExpenses = safeAdd(todayGeneralExpenses, e.amount); }); 
+                eList.forEach(e => { if (isRecordFromToday(e.date) && e.amount && (!e.desc || !e.desc.includes("نثرية تلقائية"))) todayGeneralExpenses = safeAdd(todayGeneralExpenses, e.amount); }); 
             }
-            let todaySiteSum = safeAdd(todayNathriaAmount, todayGeneralExpenses); const card = document.createElement('div'); card.className = 'site-card';
+            let todaySiteSum = safeAdd(todayNathriaAmount, todayGeneralExpenses); 
+            const card = document.createElement('div'); 
+            card.className = 'site-card';
             let deleteBtnHtml = (currentUser && currentUser.role === 'admin') ? `<button class="btn-delete" onclick="event.stopPropagation(); triggerSiteDeletion('${site.realKey || site.id}', '${site.name}')">❌ حذف</button>` : '';
-            card.innerHTML = `<div class="site-card-main" onclick="openSiteDetails('${site.realKey || site.id}')"><div class="site-card-title"><span>🏗️ ${site.name}</span>${deleteBtnHtml}</div><div class="site-card-totals"><div>🙋‍♂️ عمال اليوم: ${toArabicDisplay(todayWorkersCount)} | 💰 صرفيات اليوم: ${toArabicDisplay(todayGeneralExpenses)}</div><div style="color: #c0392b; font-size: 14px; margin-top: 4px;">📊 مجموع اليوم: ${toArabicDisplay(todaySiteSum)}</div></div></div>`;
+            card.innerHTML = `<div class="site-card-main" onclick="openSiteDetails('${site.realKey || site.id}')"><div class="site-card-title"><span>🏗️ ${site.name}</span>${deleteBtnHtml}</div><div class="site-card-totals"><div>🙋‍♂️ عمال اليوم: ${toArabicDisplay(todayWorkersCount)} | 💰 صرفيات: ${toArabicDisplay(todayGeneralExpenses)}</div><div style="color: #c0392b; font-size: 14px; margin-top: 4px;">📊 مجموع اليوم: ${toArabicDisplay(todaySiteSum)}</div></div></div>`;
             container.appendChild(card);
         });
-        if (activeDisplayedCount === 0) {
-            container.innerHTML = '<div style="color:#7f8c8d; font-size:14px; padding:10px;">📭 لا توجد مواقع نشطة حالياً.</div>';
-        }
+        if (activeDisplayedCount === 0) container.innerHTML = '<div style="color:#7f8c8d; padding:10px;">📭 لا توجد مواقع نشطة حالياً.</div>';
     }
     
     function renderMainLoansData() {
@@ -612,8 +535,8 @@
         globalLoans.forEach((l, index) => { 
             if(isRecordFromToday(l.date)) { 
                 todayLoansTotal = safeAdd(todayLoansTotal, l.amount); 
-                let editBtn = `<button class="btn-edit" onclick="startEditLoan(${index})">✍️ تعديل</button>`;
-                let delBtn = `<button class="btn-delete" style="padding:6px 12px; font-size:12px; background-color: #e74c3c;" onclick="deleteMainLoan(${index})">❌ حذف الحساب</button>`; 
+                let editBtn = `<button class="btn-edit" onclick="startEditLoan(${index})">✍️</button>`;
+                let delBtn = `<button class="btn-delete" style="padding:4px 8px;" onclick="deleteMainLoan(${index})">❌</button>`; 
                 loanBody.innerHTML += `<tr><td>${cleanWorkerName(l.worker)}</td><td>${toArabicDisplay(l.amount)}</td><td>${l.by}</td><td>${editBtn}</td><td>${delBtn}</td></tr>`; 
             } 
         });
@@ -624,107 +547,59 @@
         editingLoanIndex = index;
         document.getElementById('main-loan-worker-name').value = cleanWorkerName(globalLoans[index].worker);
         document.getElementById('main-loan-amount').value = globalLoans[index].amount;
-        const btn = document.getElementById('btn-submit-loan');
-        btn.innerText = "تحديث السلفة المعتمدة ✓";
-        btn.style.backgroundColor = "#2980b9";
+        document.getElementById('btn-submit-loan').innerText = "تحديث السلفة ✓";
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function submitMainLoan() {
-        const rawWorker = document.getElementById('main-loan-worker-name').value;
-        const worker = cleanWorkerName(rawWorker); 
+        const worker = cleanWorkerName(document.getElementById('main-loan-worker-name').value); 
         const amount = cleanAndFormatNumber(document.getElementById('main-loan-amount').value.trim()); 
         if(!worker || amount <= 0) return;
         
         if (editingLoanIndex !== null) {
             globalLoans[editingLoanIndex].worker = worker;
             globalLoans[editingLoanIndex].amount = amount;
-            globalLoans[editingLoanIndex].by = currentUser.displayName;
             editingLoanIndex = null;
-            const btn = document.getElementById('btn-submit-loan');
-            btn.innerText = "حفظ السلفة اليومية";
-            btn.style.backgroundColor = "#e67e22";
+            document.getElementById('btn-submit-loan').innerText = "حفظ السلفة اليومية";
         } else {
-            let existingIndex = -1;
-            for (let i = 0; i < globalLoans.length; i++) {
-                if (cleanWorkerName(globalLoans[i].worker) === worker && isRecordFromToday(globalLoans[i].date)) {
-                    existingIndex = i; break;
-                }
-            }
-            if (existingIndex !== -1) {
-                globalLoans[existingIndex].amount = safeAdd(globalLoans[existingIndex].amount, amount);
-                globalLoans[existingIndex].by = currentUser.displayName; 
-            } else {
-                globalLoans.push({ worker: worker, amount: amount, date: new Date().toISOString(), by: currentUser.displayName }); 
-            }
+            globalLoans.push({ worker: worker, amount: amount, date: new Date().toISOString(), by: currentUser.displayName }); 
         }
-        
         database.ref('globalLoans').set(globalLoans); 
         document.getElementById('main-loan-worker-name').value = ''; 
         document.getElementById('main-loan-amount').value = '';
     }
     
-    function deleteMainLoan(index) { 
-        if(confirm("⚠️ هل أنت متأكد من حذف الحساب وسلفة هذا العامل بالكامل؟")) { 
-            globalLoans.splice(index, 1); editingLoanIndex = null; database.ref('globalLoans').set(globalLoans); 
-        } 
-    }
+    function deleteMainLoan(index) { globalLoans.splice(index, 1); database.ref('globalLoans').set(globalLoans); }
 
-    function deleteLoanFromReport(workerName) {
-        if(confirm(`⚠️ هل أنت متأكد من مسح كافة سلف العامل (${workerName}) لهذه الفترة؟`)) {
-            let sDate = document.getElementById('loan-jard-start').value ? new Date(document.getElementById('loan-jard-start').value) : null; if(sDate) sDate.setHours(0,0,0,0);
-            let eDate = document.getElementById('loan-jard-end').value ? new Date(document.getElementById('loan-jard-end').value) : null; if(eDate) eDate.setHours(23,59,59,999);
-            
-            globalLoans = globalLoans.filter(l => {
-                let lDate = new Date(l.date);
-                let isTargetWorker = (cleanWorkerName(l.worker) === cleanWorkerName(workerName));
-                let isInPeriod = ((!sDate || lDate >= sDate) && (!eDate || lDate <= eDate));
-                return !(isTargetWorker && isInPeriod);
-            });
-            database.ref('globalLoans').set(globalLoans);
-        }
-    }
-    
     function calculateLoansJard() {
         let sDate = document.getElementById('loan-jard-start').value ? new Date(document.getElementById('loan-jard-start').value) : null; if(sDate) sDate.setHours(0,0,0,0);
         let eDate = document.getElementById('loan-jard-end').value ? new Date(document.getElementById('loan-jard-end').value) : null; if(eDate) eDate.setHours(23,59,59,999);
-        
         let filteredTotal = 0; let workerLoansList = [];
         globalLoans.forEach(l => { 
             let lDate = new Date(l.date); 
             if ((!sDate || lDate >= sDate) && (!eDate || lDate <= eDate)) {
                 filteredTotal = safeAdd(filteredTotal, l.amount); 
-                let cleanName = cleanWorkerName(l.worker);
-                workerLoansList.push({ worker: cleanName, amount: l.amount, by: l.by || 'غير معروف' });
+                workerLoansList.push({ worker: cleanWorkerName(l.worker), amount: l.amount, by: l.by || 'غير معروف' });
             } 
         });
-
-        const detailsContainer = document.getElementById('loan-jard-details-container');
-        
+        const container = document.getElementById('loan-jard-details-container');
         if (workerLoansList.length > 0) {
-            let tableHtml = `<table style="width:100%; border-collapse: collapse; margin-bottom: 10px; background: #fff;"><thead><tr style="background-color: #2471a3; color: white;"><th style="padding:8px; border:1px solid #ddd; text-align: right;">اسم العامل</th><th style="padding:8px; border:1px solid #ddd; text-align: center;">مبلغ السلفة</th><th style="padding:8px; border:1px solid #ddd; text-align: center;">بواسطة (الفورمن)</th><th style="padding:8px; border:1px solid #ddd; text-align: center;">إجراء</th></tr></thead><tbody>`;
-            workerLoansList.forEach(item => {
-                let escapedName = item.worker.replace(/'/g, "\\'");
-                tableHtml += `<tr><td style="padding:8px; text-align: right; font-weight: bold; border:1px solid #dee2e6;">👤 ${item.worker}</td><td style="padding:8px; text-align: center; font-weight: bold; color: #c0392b; border:1px solid #dee2e6;">${toArabicDisplay(item.amount)}</td><td style="padding:8px; text-align: center; color: #7f8c8d; border:1px solid #dee2e6; font-size:12px; font-weight: bold;">${item.by}</td><td style="padding:8px; text-align: center; border:1px solid #dee2e6;"><button class="btn-delete" style="padding:4px 8px; font-size:12px; background-color: #e74c3c;" onclick="deleteLoanFromReport('${escapedName}')">❌ حذف</button></td></tr>`;
-            });
-            tableHtml += `</tbody></table>`;
-            detailsContainer.innerHTML = tableHtml;
-        } else {
-            detailsContainer.innerHTML = `<div style="text-align:center; color:#7f8c8d; font-size:13px; padding:10px;">📭 لا توجد سلف مسجلة خلال هذه الفترة.</div>`;
-        }
-        document.getElementById('loan-jard-result').innerText = `💵 المجموع المفلتر لسلف الفترة = ${toArabicDisplay(filteredTotal)}`;
+            let html = `<table style="width:100%; border-collapse:collapse; background:#fff;"><thead><tr style="background:#2471a3; color:#fff;"><th>العامل</th><th>المبلغ</th><th>بواسطة</th></tr></thead><tbody>`;
+            workerLoansList.forEach(item => { html += `<tr><td>${item.worker}</td><td>${toArabicDisplay(item.amount)}</td><td>${item.by}</td></tr>`; });
+            container.innerHTML = html + `</tbody></table>`;
+        } else { container.innerHTML = '<div style="color:#7f8c8d; text-align:center;">لا توجد سلف بالفترة.</div>'; }
+        document.getElementById('loan-jard-result').innerText = `المجموع المفلتر = ${toArabicDisplay(filteredTotal)}`;
     }
     
     function renderMainMaterialsData() {
-        const matBody = document.getElementById('table-main-material-body'); matBody.innerHTML = ''; let todayMaterialsTotal = 0;
+        const matBody = document.getElementById('table-main-material-body'); matBody.innerHTML = ''; let total = 0;
         globalMaterials.forEach((m, index) => { 
             if(isRecordFromToday(m.date)) { 
-                todayMaterialsTotal = safeAdd(todayMaterialsTotal, m.amount); 
-                let delBtn = `<button class="btn-delete" style="padding:4px 8px; font-size:12px;" onclick="deleteMainMaterial(${index})">❌</button>`; 
-                matBody.innerHTML += `<tr><td>${m.name}</td><td>${toArabicDisplay(m.amount)}</td><td>${m.by}</td><td>${delBtn}</td></tr>`; 
+                total = safeAdd(total, m.amount); 
+                matBody.innerHTML += `<tr><td>${m.name}</td><td>${toArabicDisplay(m.amount)}</td><td>${m.by}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteMainMaterial(${index})">❌</button></td></tr>`; 
             } 
         });
-        document.getElementById('main-material-today-total').innerText = `إجمالي حساب مواد اليوم الحالي = ${toArabicDisplay(todayMaterialsTotal)}`;
+        document.getElementById('main-material-today-total').innerText = `إجمالي المواد = ${toArabicDisplay(total)}`;
     }
     function submitMainMaterial() {
         const name = document.getElementById('main-material-name').value.trim(); 
@@ -734,45 +609,38 @@
         database.ref('globalMaterials').set(globalMaterials); 
         document.getElementById('main-material-name').value = ''; document.getElementById('main-material-amount').value = '';
     }
-    function deleteMainMaterial(index) { if(confirm("حذف المادة؟")) { globalMaterials.splice(index, 1); database.ref('globalMaterials').set(globalMaterials); } }
+    function deleteMainMaterial(index) { globalMaterials.splice(index, 1); database.ref('globalMaterials').set(globalMaterials); }
     
     function calculateMaterialsJard() {
         let sDate = document.getElementById('material-jard-start').value ? new Date(document.getElementById('material-jard-start').value) : null; if(sDate) sDate.setHours(0,0,0,0);
         let eDate = document.getElementById('material-jard-end').value ? new Date(document.getElementById('material-jard-end').value) : null; if(eDate) eDate.setHours(23,59,59,999);
-        
-        let filteredTotal = 0; 
-        let filteredMaterialsList = [];
-
+        let total = 0; let list = [];
         globalMaterials.forEach(m => { 
             let mDate = new Date(m.date); 
             if ((!sDate || mDate >= sDate) && (!eDate || mDate <= eDate)) {
-                filteredTotal = safeAdd(filteredTotal, m.amount);
-                let formattedDate = mDate.getFullYear() + '/' + String(mDate.getMonth() + 1).padStart(2, '0') + '/' + String(mDate.getDate()).padStart(2, '0');
-                filteredMaterialsList.push({ name: m.name, amount: m.amount, date: formattedDate, by: m.by || 'غير معروف' });
+                total = safeAdd(total, m.amount);
+                list.push({ name: m.name, amount: m.amount, by: m.by });
             } 
         });
-
-        const detailsContainer = document.getElementById('material-jard-details-container');
-        if (filteredMaterialsList.length > 0) {
-            let tableHtml = `<table style="width:100%; border-collapse: collapse; margin-bottom: 10px; background: #fff;"><thead><tr style="background-color: #16a085; color: white;"><th style="padding:8px; border:1px solid #ddd; text-align: right;">اسم المادة</th><th style="padding:8px; border:1px solid #ddd; text-align: center;">التاريخ</th><th style="padding:8px; border:1px solid #ddd; text-align: center;">المبلغ</th><th style="padding:8px; border:1px solid #ddd; text-align: center;">بواسطة</th></tr></thead><tbody>`;
-            filteredMaterialsList.forEach(mat => {
-                tableHtml += `<tr><td style="padding:8px; text-align: right; font-weight: bold; border:1px solid #dee2e6;">🧱 ${mat.name}</td><td style="padding:8px; text-align: center; border:1px solid #dee2e6;">${mat.date}</td><td style="padding:8px; text-align: center; font-weight: bold; color: #c0392b; border:1px solid #dee2e6;">${toArabicDisplay(mat.amount)}</td><td style="padding:8px; text-align: center; color: #7f8c8d; border:1px solid #dee2e6; font-size:12px;">${mat.by}</td></tr>`;
-            });
-            tableHtml += `</tbody></table>`;
-            detailsContainer.innerHTML = tableHtml;
-        } else {
-            detailsContainer.innerHTML = `<div style="text-align:center; color:#7f8c8d; font-size:13px; padding:10px;">📭 لا توجد مواد مسجلة خلال هذه الفترة.</div>`;
-        }
-
-        document.getElementById('material-jard-result').innerText = `💵 المجموع المفلتر لمواد الفترة = ${toArabicDisplay(filteredTotal)}`;
+        const container = document.getElementById('material-jard-details-container');
+        if (list.length > 0) {
+            let html = `<table style="width:100%; border-collapse:collapse; background:#fff;"><thead><tr style="background:#16a085; color:#fff;"><th>المادة</th><th>المبلغ</th><th>بواسطة</th></tr></thead><tbody>`;
+            list.forEach(i => { html += `<tr><td>${i.name}</td><td>${toArabicDisplay(i.amount)}</td><td>${i.by}</td></tr>`; });
+            container.innerHTML = html + `</tbody></table>`;
+        } else { container.innerHTML = '<div style="color:#7f8c8d; text-align:center;">لا توجد مواد بالفترة.</div>'; }
+        document.getElementById('material-jard-result').innerText = `المجموع المفلتر = ${toArabicDisplay(total)}`;
     }
     
     function renderJardCheckboxesOnly() {
-        const container = document.getElementById('jard-checkboxes-container'); const checkedSavedIds = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value); container.innerHTML = '';
+        const container = document.getElementById('jard-checkboxes-container'); 
+        let checkedSavedIds = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value); 
+        container.innerHTML = '';
         sitesData.forEach(site => {
-            const labelItem = document.createElement('label'); labelItem.className = 'checkbox-item'; const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.value = site.realKey || site.id; checkbox.onchange = calculateMultiSelectJard;
-            if (checkedSavedIds.includes((site.realKey || site.id).toString()) || checkedSavedIds.length === 0) checkbox.checked = true;
-            labelItem.appendChild(checkbox); const nameSpan = document.createElement('span'); nameSpan.innerText = ` 🏗️ ${site.name}`; labelItem.appendChild(nameSpan); container.appendChild(labelItem);
+            const label = document.createElement('label'); label.className = 'checkbox-item'; 
+            const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = site.realKey || site.id; cb.onchange = calculateMultiSelectJard;
+            if (checkedSavedIds.includes(cb.value) || checkedSavedIds.length === 0) cb.checked = true;
+            label.appendChild(cb); label.appendChild(document.createTextNode(` 🏗️ ${site.name}`)); 
+            container.appendChild(label);
         });
     }
     function selectAllJardSites(status) { document.querySelectorAll('#jard-checkboxes-container input[type="checkbox"]').forEach(cb => cb.checked = status); calculateMultiSelectJard(); }
@@ -782,168 +650,125 @@
         const Jack = document.getElementById('jard-dashboard-results'); 
         if (checkedBoxes.length === 0) { Jack.innerHTML = "<div class='total-box'>⚠️ حدد موقعاً!</div>"; return; }
         
-        let rawStartStr = document.getElementById('jard-start-date').value; 
-        let rawEndStr = document.getElementById('jard-end-date').value; 
-        let totalWorkers = 0; let totalNathria = 0; let totalExpenses = 0; let namesOfSelectedSites = [];
-        let allSitesTablesHtml = '';
+        let startStr = document.getElementById('jard-start-date').value; 
+        let endStr = document.getElementById('jard-end-date').value; 
+        let totalW = 0, totalN = 0, totalE = 0; let siteNames = []; let htmlTables = '';
 
         checkedBoxes.forEach(cb => {
             const site = sitesData.find(s => (s.realKey || s.id).toString() === cb.value.toString());
             if (site) {
-                namesOfSelectedSites.push(site.name);
-                let siteWorkersMap = {}; let siteExpensesList = [];
-
-                if (site.workers) { 
+                siteNames.push(site.name);
+                let wMap = {}; let eList = [];
+                if (site.workers) {
                     let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-                    wList.forEach(w => { 
-                        if (w && w.date) {
-                            let wLocalDateStr = new Date(w.date).toLocaleDateString('en-CA'); 
-                            if ((!rawStartStr || wLocalDateStr >= rawStartStr) && (!rawEndStr || wLocalDateStr <= rawEndStr)) {
-                                totalWorkers++; totalNathria = safeAdd(totalNathria, 2); 
-                                let cleanName = cleanWorkerName(w.name);
-                                if (!siteWorkersMap[cleanName]) { siteWorkersMap[cleanName] = new Set(); }
-                                siteWorkersMap[cleanName].add(wLocalDateStr);
+                    wList.forEach(w => {
+                        let dStr = new Date(w.date).toLocaleDateString('en-CA');
+                        if ((!startStr || dStr >= startStr) && (!endStr || dStr <= endStr)) {
+                            totalW++; totalN = safeAdd(totalN, 2);
+                            let cName = cleanWorkerName(w.name);
+                            if(!wMap[cName]) wMap[cName] = new Set();
+                            wMap[cName].add(dStr);
+                        }
+                    });
+                }
+                if (site.expenses) {
+                    let exList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
+                    exList.forEach(e => {
+                        let dStr = new Date(e.date).toLocaleDateString('en-CA');
+                        if ((!startStr || dStr >= startStr) && (!endStr || dStr <= endStr)) {
+                            if (e.amount && (!e.desc || !e.desc.includes("نثرية تلقائية"))) {
+                                totalE = safeAdd(totalE, e.amount);
+                                eList.push({ desc: e.desc, amount: e.amount, by: e.by });
                             }
                         }
-                    }); 
+                    });
                 }
-                
-                if (site.expenses) { 
-                    let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-                    eList.forEach(e => { 
-                        if (e && e.date) {
-                            let eLocalDateStr = new Date(e.date).toLocaleDateString('en-CA');
-                            if ((!rawStartStr || eLocalDateStr >= rawStartStr) && (!rawEndStr || eLocalDateStr <= rawEndStr)) { 
-                                if (e.amount && (!e.desc || !e.desc.includes("نثرية تلقائية للعامل"))) {
-                                    totalExpenses = safeAdd(totalExpenses, e.amount); 
-                                    let eDateObj = new Date(e.date);
-                                    let formattedDate = eDateObj.getFullYear() + '/' + String(eDateObj.getMonth() + 1).padStart(2, '0') + '/' + String(eDateObj.getDate()).padStart(2, '0');
-                                    siteExpensesList.push({ desc: e.desc, amount: e.amount, date: formattedDate, by: e.by || 'غير معروف' });
-                                }
-                            }
-                        } 
-                    }); 
-                }
-                
-                let sortedSiteWorkers = Object.keys(siteWorkersMap).sort();
-                if (sortedSiteWorkers.length > 0 || siteExpensesList.length > 0) {
-                    allSitesTablesHtml += `<div class="section" style="margin-top: 15px; background: #fff; border: 2px solid #2980b9; padding: 12px;"><h3 style="color: #2980b9; text-align: right; margin-top:0; font-size:17px; border-bottom: 2px solid #2980b9; padding-bottom: 5px;">🏗️ تقرير جرد موقع: (${site.name})</h3>`;
-
-                    if (sortedSiteWorkers.length > 0) {
-                        allSitesTablesHtml += `<h4 style="text-align: right; margin: 8px 0 5px 0; color: #34495e; font-size:14px;">👥 سجل حضور عمال الموقع:</h4><table style="width:100%; border-collapse: collapse; margin-bottom: 15px;"><thead><tr style="background-color: #34495e; color: white;"><th style="padding:6px; border:1px solid #ddd; text-align: right;">اسم العامل</th><th style="padding:6px; border:1px solid #ddd; text-align: center;">أيام الحضور</th></tr></thead><tbody>`;
-                        sortedSiteWorkers.forEach(wName => {
-                            let daysCount = siteWorkersMap[wName].size;
-                            allSitesTablesHtml += `<tr><td style="padding:6px; font-weight:bold; text-align:right; border:1px solid #dee2e6;">👤 ${wName}</td><td style="padding:6px; font-weight:bold; color:#27ae60; text-align:center; border:1px solid #dee2e6;">${toArabicDisplay(daysCount)} يوم</td></tr>`;
-                        });
-                        allSitesTablesHtml += `</tbody></table>`;
+                if(Object.keys(wMap).length > 0 || eList.length > 0) {
+                    htmlTables += `<div class="section" style="border:2px solid #2980b9;"><h3>🏗️ موقع: ${site.name}</h3>`;
+                    if(Object.keys(wMap).length > 0) {
+                        htmlTables += `<table><thead><tr><th>العامل</th><th>أيام الحضور</th></tr></thead><tbody>`;
+                        Object.keys(wMap).forEach(w => { htmlTables += `<tr><td>${w}</td><td>${toArabicDisplay(wMap[w].size)} يوم</td></tr>`; });
+                        htmlTables += `</tbody></table>`;
                     }
-
-                    if (siteExpensesList.length > 0) {
-                        allSitesTablesHtml += `<h4 style="text-align: right; margin: 8px 0 5px 0; color: #b7950b; font-size:14px;">💰 تقرير تفاصيل الصرفيات:</h4><table style="width:100%; border-collapse: collapse;"><thead><tr style="background-color: #b7950b; color: white;"><th style="padding:6px; border:1px solid #ddd; text-align: right;">البيان وصاحب الصرف</th><th style="padding:6px; border:1px solid #ddd; text-align: center;">التاريخ</th><th style="padding:6px; border:1px solid #ddd; text-align: center;">المبلغ</th></tr></thead><tbody>`;
-                        siteExpensesList.forEach(exp => {
-                            allSitesTablesHtml += `<tr><td style="padding:8px; text-align:right; border:1px solid #dee2e6;"><strong>${exp.desc}</strong><br><span style="color:#7f8c8d; font-size:11px;">بواسطة: ${exp.by}</span></td><td style="padding:8px; text-align:center; border:1px solid #dee2e6;">${exp.date}</td><td style="padding:8px; text-align:center; border:1px solid #dee2e6; font-weight:bold; color:#c0392b;">${toArabicDisplay(exp.amount)}</td></tr>`;
-                        });
-                        allSitesTablesHtml += `</tbody></table>`;
-                    }
-                    allSitesTablesHtml += `</div>`;
+                    htmlTables += `</div>`;
                 }
             }
         });
-        
-        let finalCombinedTotal = safeAdd(totalNathria, totalExpenses);
-        if (allSitesTablesHtml === '') {
-            allSitesTablesHtml = `<div class="section" style="margin-top: 15px; background: #fff; border: 1px dashed #ccc; text-align:center; color:#7f8c8d;">📭 لا توجد أي بيانات حضور أو صرفيات مسجلة للموقع المحدد خلال هذه الفترة.</div>`;
-        }
-
-        Jack.innerHTML = `
-            <div class="jard-block" style="border-right: 5px solid #16a085;"><div class="jard-block-title">📁 المواقع المرصودة:</div><div>${namesOfSelectedSites.join(' ، ')}</div></div>
-            <div class="jard-block" style="border-right: 5px solid #3498db;"><div class="jard-block-title">🙋‍♂️ إجمالي حضور العمال الكلي:</div><div>${toArabicDisplay(totalWorkers)} مرة حضور</div></div>
-            <div class="jard-block" style="border-right: 5px solid #9b59b6;"><div class="jard-block-title">🙋‍♂️ نثرية العمال التلقائية:</div><div>${toArabicDisplay(totalNathria)}</div></div>
-            <div class="jard-block" style="border-right: 5px solid #f1c40f;"><div class="jard-block-title">💰 إجمالي صرفيات المواقع الفردية:</div><div>${toArabicDisplay(totalExpenses)}</div></div>
-            <div class="total-box" style="font-size: 20px; color:#c0392b; margin-bottom: 20px;">💵 إجمالي الحساب النهائي للمواقع = <span>${toArabicDisplay(finalCombinedTotal)}</span></div>
-            <h2 style="text-align: right; color:#2c3e50; font-size:18px; margin-top:25px;">📊 التقارير التفصيلية والتحليلية المقسمة للمشاريع:</h2>
-            ${allSitesTablesHtml}
-        `;
+        Jack.innerHTML = `<div class="total-box" style="color:#c0392b;">إجمالي الحساب النهائي = ${toArabicDisplay(safeAdd(totalN, totalE))}</div>${htmlTables}`;
     }
     
     function openSiteDetails(siteId) { 
         activeSiteId = siteId.toString(); 
-        const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); 
-        if(!site) return; 
         showScreen('screen-site-details'); 
         renderSiteData(); 
     }
     
     function renderSiteData() {
-        const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); if(!site) return; document.getElementById('current-site-title').innerText = `🏗️ موقع: ${site.name}`;
-        const expBody = document.getElementById('table-expense-body'); expBody.innerHTML = ''; let currentGeneralExpenses = 0;
+        const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); 
+        if(!site) return; 
+        document.getElementById('current-site-title').innerText = `🏗️ موقع: ${site.name}`;
+        
+        const expBody = document.getElementById('table-expense-body'); expBody.innerHTML = ''; let genExp = 0;
         if (site.expenses) { 
             let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-            eList.forEach((e, index) => { if (e && e.desc && !e.desc.includes("نثرية تلقائية للعامل") && isRecordFromToday(e.date)) { currentGeneralExpenses = safeAdd(currentGeneralExpenses, e.amount); let deleteBtnHtml = `<button class="btn-delete" style="padding:4px 8px; font-size:12px;" onclick="deleteExpense(${index})">❌</button>`; expBody.innerHTML += `<tr><td>${e.desc}</td><td>${toArabicDisplay(e.amount)}</td><td>${e.by || ''}</td><td>${deleteBtnHtml}</td></tr>`; } }); 
+            eList.forEach((e, idx) => { 
+                if (e && e.desc && !e.desc.includes("نثرية تلقائية") && isRecordFromToday(e.date)) { 
+                    genExp = safeAdd(genExp, e.amount); 
+                    expBody.innerHTML += `<tr><td>${e.desc}</td><td>${toArabicDisplay(e.amount)}</td><td>${e.by || ''}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteExpense(${idx})">❌</button></td></tr>`; 
+                } 
+            }); 
         }
-        const workerBody = document.getElementById('table-attendance-body'); workerBody.innerHTML = ''; let todayWorkersCount = 0;
+        
+        const workerBody = document.getElementById('table-attendance-body'); workerBody.innerHTML = ''; let wCount = 0;
         if (site.workers) { 
             let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-            wList.forEach((w, index) => { if (w && isRecordFromToday(w.date)) { todayWorkersCount++; let deleteBtnHtml = `<button class="btn-delete" style="padding:4px 8px; font-size:12px;" onclick="deleteWorker(${index}, '${w.name}')">❌</button>`; workerBody.innerHTML += `<tr><td>${cleanWorkerName(w.name)}</td><td>${new Date(w.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</td><td>${deleteBtnHtml}</td></tr>`; } }); 
+            wList.forEach((w, idx) => { 
+                if (w && isRecordFromToday(w.date)) { 
+                    wCount++; 
+                    workerBody.innerHTML += `<tr><td>${cleanWorkerName(w.name)}</td><td>${new Date(w.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteWorker(${idx}, '${w.name}')">❌</button></td></tr>`; 
+                } 
+            }); 
         }
-        let currentNathriaTotal = todayWorkersCount * 2; document.getElementById('site-bottom-totals').innerHTML = `
-            <div class="split-box"><span style="color: #2980b9;">🙋‍♂️ عمال اليوم: ${toArabicDisplay(todayWorkersCount)} (نثرية: ${toArabicDisplay(currentNathriaTotal)})</span><span style="color: #b7950b;">💰 مصاريف اليوم: ${toArabicDisplay(currentGeneralExpenses)}</span></div><div style="margin-top:8px; color:#c0392b; font-size: 19px; border-top:1px solid #ccc; padding-top:4px;">مجموع اليوم الحالي = ${toArabicDisplay(safeAdd(currentNathriaTotal, currentGeneralExpenses))}</div>`;
+        let nathria = wCount * 2; 
+        document.getElementById('site-bottom-totals').innerHTML = `مجموع اليوم الحالي = ${toArabicDisplay(safeAdd(nathria, genExp))}`;
     }
     
     function submitAttendance() {
-        const rawName = document.getElementById('worker-name').value; 
-        const name = cleanWorkerName(rawName);
-        if(!name) { alert('❌ يرجى كتابة أو اختيار اسم العامل أولاً!'); return; } 
-        if (!activeSiteId) { alert('❌ لم يتم اختيار موقع!'); return; }
-        
+        const name = cleanWorkerName(document.getElementById('worker-name').value);
+        if(!name || !activeSiteId) return;
         const now = new Date().toISOString(); 
-        
         database.ref('sites/' + activeSiteId + '/workers').push({ name: name, date: now });
-        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: `نثرية تلقائية للعامل (${name})`, amount: 2, date: now, by: currentUser ? currentUser.displayName : 'فورمن' }).then(() => {
+        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: `نثرية تلقائية للعامل (${name})`, amount: 2, date: now, by: currentUser.displayName }).then(() => {
             document.getElementById('worker-name').value = '';
-        }).catch(err => {
-            alert('❌ خطأ في الفايربيس: ' + err.message);
         });
     }
 
     function submitExpense() {
         const desc = document.getElementById('expense-desc').value.trim(); 
-        const parsedAmount = cleanAndFormatNumber(document.getElementById('expense-amount').value.trim()); 
-        if(!desc || parsedAmount <= 0) { alert('❌ يرجى كتابة البيان والمبلغ بشكل صحيح!'); return; }
-        if (!activeSiteId) { alert('❌ لم يتم اختيار موقع!'); return; }
-        
-        const now = new Date().toISOString(); 
-
-        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: desc, amount: parsedAmount, date: now, by: currentUser ? currentUser.displayName : 'فورمن' }).then(() => {
-            document.getElementById('expense-desc').value = '';
+        const amount = cleanAndFormatNumber(document.getElementById('expense-amount').value.trim()); 
+        if(!desc || amount <= 0 || !activeSiteId) return;
+        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: desc, amount: amount, date: new Date().toISOString(), by: currentUser.displayName }).then(() => {
+            document.getElementById('expense-desc').value = ''; 
             document.getElementById('expense-amount').value = '';
-        }).catch(err => {
-            alert('❌ خطأ في الفايربيس: ' + err.message);
         });
     }
 
     function deleteExpense(index) { 
         const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); 
         if(!site) return;
-        if(confirm("حذف الصرفية؟")) { 
-            let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-            eList.splice(index, 1); 
-            database.ref('sites/' + activeSiteId + '/expenses').set(eList); 
-        } 
+        let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
+        eList.splice(index, 1); 
+        database.ref('sites/' + activeSiteId + '/expenses').set(eList); 
     }
 
     function deleteWorker(workerIndex, workerName) {
         const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); 
-        if(!site) return;
-        if(!confirm(`حذف العامل ${workerName}؟`)) return; 
-        
+        if(!site || !confirm(`حذف العامل ${workerName}؟`)) return; 
         let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
         let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-
         wList.splice(workerIndex, 1);
-        const expIndex = eList.findIndex(e => e && e.desc === `نثرية تلقائية للعامل (${workerName})` && isRecordFromToday(e.date)); 
-        if(expIndex !== -1) eList.splice(expIndex, 1); 
-
+        const expIdx = eList.findIndex(e => e && e.desc === `نثرية تلقائية للعامل (${workerName})` && isRecordFromToday(e.date)); 
+        if(expIdx !== -1) eList.splice(expIdx, 1); 
         database.ref('sites/' + activeSiteId).update({ workers: wList, expenses: eList });
     }
 </script>
