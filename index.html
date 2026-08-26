@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>النظام المحاسبي السحابي - نظام دمج الأسماء المتقدم</title>
     
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
+    
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -406,7 +409,6 @@
             }
         });
 
-        // حماية تمنع التعليق أكثر من ثانيتين
         setTimeout(() => {
             if(loadingInd) loadingInd.classList.add('hidden');
         }, 2000);
@@ -605,7 +607,7 @@
             if(isRecordFromToday(l.date)) { 
                 todayLoansTotal = safeAdd(todayLoansTotal, l.amount); 
                 let editBtn = `<button class="btn-edit" onclick="startEditLoan(${index})">✍️ تعديل</button>`;
-                let delBtn = `<button class="btn-delete" style="padding:6px 12px; font-size:12px; background-color: #e74c3c;" onclick="deleteMainLoan(${index})">❌ حذف الحساب</button>`; 
+                let delBtn = `<button class="btn-delete" style="padding:6px 12px; font-size:12px; background-color: #e74c3c;" onclick="deleteMainLoan(${index})">❌ حذف الحساب</button>"; 
                 loanBody.innerHTML += `<tr><td>${cleanWorkerName(l.worker)}</td><td>${toArabicDisplay(l.amount)}</td><td>${l.by}</td><td>${editBtn}</td><td>${delBtn}</td></tr>`; 
             } 
         });
@@ -901,7 +903,7 @@
     function submitExpense() {
         const desc = document.getElementById('expense-desc').value.trim(); 
         const parsedAmount = cleanAndFormatNumber(document.getElementById('expense-amount').value.trim()); 
-        if(!desc || parsedAmount <= 0) { alert('❌ يرجى كتابة البيان والمبلغ بشكل صحيح!'); return; }
+        if(!desc || parsedAmount <= 0) { alert('❌ يرجى كتابة البيان والمبلغ بشكل صحيح الخ...'); return; }
         if (!activeSiteId) { alert('❌ لم يتم اختيار موقع!'); return; }
         
         const now = new Date().toISOString(); 
@@ -933,6 +935,10 @@
         let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
 
         wList.splice(workerIndex, 1);
+        const expIndex = eList.findIndex(e => e && e.desc === `نثرية تلقائية للعامل (${workerName})` && isRecordFromToday(e.date)); 
+        if(expIndex !== -1) eList.splice(expIndex, 1); 
+
+        database.ref('sites/' + activeSiteId).update({ workers: wList, expenses: eList });
     }
 </script>
 </body>
