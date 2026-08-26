@@ -8,10 +8,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
     
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -38,7 +34,6 @@
         .welcome-text { color: #e67e22; font-weight: bold; margin-bottom: 5px; font-size: 16px; }
         .live-time { color: #7f8c8d; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
         .split-box { display: flex; gap: 10px; justify-content: space-between; margin-top: 5px; font-size: 14px; }
-        .loading-text { color: #7f8c8d; font-size: 16px; margin: 10px 0; }
         .btn-delete { background-color: #e74c3c; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .btn-edit { background-color: #3498db; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; text-align: right; }
@@ -94,7 +89,6 @@
         </div>
         
         <h2 style="text-align: right; margin-top: 20px;">المواقع النشطة اليوم:</h2>
-        <div id="loading-indicator" class="loading-text">جاري جلب البيانات من السيرفر...</div>
         <div id="sites-list-container"></div>
         
         <button class="btn-back" style="margin-top: 20px;" onclick="handleLogoutSystem()">تسجيل الخروج</button>
@@ -326,8 +320,7 @@
     }
     
     function startCloudSync() {
-        const loadingInd = document.getElementById('loading-indicator');
-        
+        // اتصال هادئ وخلفي بالفايربيس بدون إظهار أي نص انتظار يزعج المستخدم
         database.ref().on('value', (snapshot) => {
             const root = snapshot.val() || {}; 
             rawFirebaseData = root;
@@ -353,8 +346,10 @@
                 });
             }
             
-            sitesData = tempSites;
-            localStorage.setItem('offline_sites_cache', JSON.stringify(sitesData));
+            if(tempSites.length > 0) {
+                sitesData = tempSites;
+                localStorage.setItem('offline_sites_cache', JSON.stringify(sitesData));
+            }
             
             globalLoans = root.globalLoans || []; 
             if(typeof globalLoans === 'object' && !Array.isArray(globalLoans)) globalLoans = Object.values(globalLoans);
@@ -364,8 +359,6 @@
             
             updateWorkersSuggestList();
 
-            if(loadingInd) loadingInd.classList.add('hidden');
-
             if(currentUser) { 
                 renderSites(); 
                 if(currentActiveScreen === 'screen-jard-dashboard') { renderJardCheckboxesOnly(); calculateMultiSelectJard(); }
@@ -373,14 +366,6 @@
                 if(currentActiveScreen === 'screen-main-materials') { renderMainMaterialsData(); calculateMaterialsJard(); }
                 if(currentActiveScreen === 'screen-archive-dashboard') { renderArchiveScreenLists(); }
                 if(activeSiteId) renderSiteData(); 
-            }
-        }, (error) => {
-            console.error("خطأ بالاتصال:", error);
-            if(loadingInd) loadingInd.classList.add('hidden');
-            const cached = localStorage.getItem('offline_sites_cache');
-            if(cached) {
-                sitesData = JSON.parse(cached);
-                if(currentUser) renderSites();
             }
         });
     }
@@ -778,7 +763,7 @@
     }
 
     function deleteWorker(workerIndex, workerName) {
-        const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); 
+        const site = sitesData.find(s => (s.realCard || s.id).toString() === activeSiteId); 
         if(!site || !confirm(`حذف العامل ${workerName}؟`)) return; 
         let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
         let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
