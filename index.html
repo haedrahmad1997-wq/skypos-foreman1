@@ -87,7 +87,7 @@
         </div>
         
         <h2 style="text-align: right; margin-top: 20px;">المواقع النشطة اليوم:</h2>
-        <div id="sites-list-container">جاري جلب البيانات من السيرفر المباشر...</div>
+        <div id="sites-list-container">جاري مزامنة المواقع من السيرفر...</div>
         
         <button class="btn-back" style="margin-top: 20px;" onclick="handleLogoutSystem()">تسجيل الخروج</button>
     </div>
@@ -221,7 +221,7 @@
     const firebaseConfig = {
         apiKey: "AIzaSyAhtyGlPrkNOeW1vqM1Kwem89To0ibHeM4",
         authDomain: "amlak-system-57d9c.firebaseapp.com",
-        databaseURL: "https://amlak-system-57d9c-default-rtdb.firebaseio.com/",
+        databaseURL: "https://amlak-system-57d9c-default-rtdb.firebaseio.com",
         projectId: "amlak-system-57d9c",
         storageBucket: "amlak-system-57d9c.firebasestorage.app",
         messagingSenderId: "369533980201",
@@ -297,17 +297,22 @@
     }
     
     function startCloudSync() {
-        // اتصال مباشر من السيرفر بدون اي تخزين محلي يعكس البيانات على الموبايل
-        database.ref().on('value', (snapshot) => {
+        // استخدام استعلام شامل ومباشر لجذر قاعدة البيانات لضمان قراءة المواقع على الموبايل
+        database.ref('/').on('value', (snapshot) => {
             const root = snapshot.val() || {}; 
             rawFirebaseData = root;
-            const data = root.sites; 
+            
+            // جلب البيانات سواء كانت محفوظة بمفتاح sites أو بشكل مباشر
+            const data = root.sites || root; 
             let tempSites = [];
             
             if (data) {
                 Object.keys(data).forEach(key => {
+                    // استثناء الجداول العامة وعدم اعتبارها مواقع
+                    if (key === 'globalLoans' || key === 'globalMaterials') return;
+                    
                     let site = data[key];
-                    if(site) {
+                    if(site && (site.name || site.id)) {
                         site.realKey = key;
                         if(!site.expenses) site.expenses = []; 
                         if(!site.workers) site.workers = [];
@@ -509,7 +514,7 @@
             if(isRecordFromToday(l.date)) { 
                 todayLoansTotal = safeAdd(todayLoansTotal, l.amount); 
                 let editBtn = `<button class="btn-edit" onclick="startEditLoan(${index})">✍️</button>`;
-                let delBtn = `<button class="btn-delete" style="padding:4px 8px;" onclick="deleteMainLoan(${index})">❌</button>`; 
+                let delBtn = `<button class="btn-delete" style="padding:4px 8px;" onclick="deleteMainLoan(${index})">❌</button>"; 
                 loanBody.innerHTML += `<tr><td>${cleanWorkerName(l.worker)}</td><td>${toArabicDisplay(l.amount)}</td><td>${l.by}</td><td>${editBtn}</td><td>${delBtn}</td></tr>`; 
             } 
         });
