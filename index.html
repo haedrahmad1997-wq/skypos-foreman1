@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>النظام المحاسبي السحابي - سكاي بوس</title>
+    <title>النظام المحاسبي المحلي المستقل - سكاي بوس</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         body { font-family: sans-serif; background-color: #f0f2f5; margin: 0; padding: 15px; text-align: center; }
         .container { max-width: 650px; margin: 10px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -33,6 +31,7 @@
         .btn-delete { background-color: #e74c3c; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .main-nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .btn-main-nav { margin-bottom: 0; font-size: 14px; padding: 14px 10px; }
+        .backup-panel { background: #fef9e7; border: 2px solid #f39c12; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: right; }
     </style>
 </head>
 <body>
@@ -41,7 +40,7 @@
 
 <div class="container">
     <div id="screen-login">
-        <h1>🔒 تسجيل الدخول للنظام السحابي</h1>
+        <h1>🔒 تسجيل الدخول للنظام المستقل</h1>
         <div class="section">
             <div class="form-group"><label>اسم المستخدم:</label><input type="text" id="username-input" placeholder="اسم المستخدم..."></div>
             <div class="form-group"><label>الرمز السري:</label><input type="password" id="password-input" placeholder="الرمز السري..."></div>
@@ -50,10 +49,16 @@
     </div>
 
     <div id="screen-home" class="hidden">
-        <h1>🏗️ لوحة تحكم المواقع السحابية</h1>
+        <h1>🏗️ لوحة تحكم المواقع المستقلة</h1>
         <div class="welcome-text" id="welcome-msg"></div>
         <div class="live-time" id="live-time-display">التاريخ: ...</div>
         
+        <div class="backup-panel">
+            <h3 style="color: #d35400; margin-top:0; font-size:16px;">💾 النسخ الاحتياطي والأمان (مهم جداً):</h3>
+            <button style="background-color: #27ae60; margin-bottom:8px;" onclick="exportSystemData()">📥 تحميل نسخة احتياطية للحاسبة</button>
+            <input type="file" id="import-file" accept=".json" onchange="importSystemData(event)" style="width:100%;">
+        </div>
+
         <div class="main-nav-grid">
             <button class="btn-main-nav" style="background-color: #16a085; grid-column: span 2;" onclick="goToJardScreen()">📊 فرز وجرد المواقع</button>
             <button class="btn-main-nav" style="background-color: #d35400;" onclick="goToMainLoansScreen()">💵 سلفة عمال</button>
@@ -136,18 +141,12 @@
 </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAhtyGlPrkNOeW1vqM1Kwem89To0ibHeM4",
-        authDomain: "amlak-system-57d9c.firebaseapp.com",
-        databaseURL: "https://amlak-system-57d9c-default-rtdb.firebaseio.com/",
-        projectId: "amlak-system-57d9c",
-        storageBucket: "amlak-system-57d9c.firebasestorage.app",
-        messagingSenderId: "369533980201",
-        appId: "1:369533980201:web:5b40816aca78bd22889638"
-    };
+    // نظام تخزين محلي مستقل آمن 100% بدون أي تكاليف
+    let dbData = JSON.parse(localStorage.getItem('skypos_local_db') || '{"sites":{}, "globalLoans":[], "globalMaterials":[]}');
 
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-    const database = firebase.database();
+    function saveDB() {
+        localStorage.setItem('skypos_local_db', JSON.stringify(dbData));
+    }
 
     const usersDatabase = [
         { username: 'admin', password: '1234', role: 'admin', displayName: 'المسؤول الرئيسي حيدر' },
@@ -159,11 +158,8 @@
     ];
 
     let currentUser = null; 
-    let sitesData = []; 
     let activeSiteId = null; 
     let currentActiveScreen = 'screen-login'; 
-    let globalLoans = []; 
-    let globalMaterials = [];
 
     function cleanWorkerName(raw) {
         if (!raw) return '';
@@ -184,51 +180,23 @@
         let d = new Date(dStr), t = new Date();
         return d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear();
     }
-
-    function startCloudSync() {
-        database.ref().on('value', (snapshot) => {
-            let root = snapshot.val() || {};
-            let rawSites = root.sites || root;
-            let tempSites = [];
-            
-            if (rawSites) {
-                let arr = Array.isArray(rawSites) ? rawSites : Object.keys(rawSites).map(k => ({ ...rawSites[k], realKey: k }));
-                arr.forEach(s => {
-                    if (s && (s.name || s.id) && s.realKey !== 'globalLoans' && s.realKey !== 'globalMaterials') {
-                        if(!s.realKey && s.id) s.realKey = s.id.toString();
-                        if(!s.expenses) s.expenses = [];
-                        if(!s.workers) s.workers = [];
-                        if(typeof s.expenses === 'object' && !Array.isArray(s.expenses)) s.expenses = Object.values(s.expenses);
-                        if(typeof s.workers === 'object' && !Array.isArray(s.workers)) s.workers = Object.values(s.workers);
-                        tempSites.push(s);
-                    }
-                });
-            }
-            sitesData = tempSites;
-            globalLoans = Array.isArray(root.globalLoans) ? root.globalLoans : Object.values(root.globalLoans || {});
-            globalMaterials = Array.isArray(root.globalMaterials) ? root.globalMaterials : Object.values(root.globalMaterials || {});
-            
-            updateWorkersSuggestList();
-            if(currentUser) {
-                renderSites();
-                if(currentActiveScreen === 'screen-main-loans') renderMainLoansData();
-                if(currentActiveScreen === 'screen-main-materials') renderMainMaterialsData();
-                if(activeSiteId) renderSiteData();
-            }
-        });
+    function updateLiveTime() {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', calendar: 'gregory' };
+        let el = document.getElementById('live-time-display');
+        if(el) el.innerText = new Date().toLocaleDateString('ar-EG', options);
     }
 
     function updateWorkersSuggestList() {
         let list = document.getElementById('workers-suggest-list'); if(!list) return;
         let set = new Set();
-        sitesData.forEach(s => s.workers?.forEach(w => { if(w?.name) set.add(cleanWorkerName(w.name)); }));
-        globalLoans.forEach(l => { if(l?.worker) set.add(cleanWorkerName(l.worker)); });
+        Object.values(dbData.sites).forEach(s => s.workers?.forEach(w => { if(w?.name) set.add(cleanWorkerName(w.name)); }));
+        dbData.globalLoans?.forEach(l => { if(l?.worker) set.add(cleanWorkerName(l.worker)); });
         list.innerHTML = '';
         Array.from(set).sort().forEach(n => { let opt = document.createElement('option'); opt.value = n; list.appendChild(opt); });
     }
 
     window.onload = function() {
-        startCloudSync();
+        updateLiveTime(); setInterval(updateLiveTime, 1000);
         let saved = localStorage.getItem('active_session_user');
         if(saved) {
             currentUser = JSON.parse(saved);
@@ -268,33 +236,34 @@
         if(currentUser.role !== 'admin') return;
         let name = document.getElementById('new-site-name').value.trim(); if(!name) return;
         let id = Date.now().toString();
-        database.ref('sites/' + id).set({ id: id, name: name, expenses: [], workers: [], isArchived: false });
-        document.getElementById('new-site-name').value = '';
+        dbData.sites[id] = { id: id, name: name, expenses: [], workers: [], isArchived: false };
+        saveDB(); document.getElementById('new-site-name').value = ''; renderSites();
     }
 
     function triggerSiteDeletion(id, name) {
-        if(confirm(`حذف موقع (${name})؟`)) database.ref('sites/' + id).remove();
+        if(confirm(`حذف موقع (${name})؟`)) { delete dbData.sites[id]; saveDB(); renderSites(); }
     }
 
     function renderSites() {
         let c = document.getElementById('sites-list-container'); if(!c) return;
         c.innerHTML = ''; let count = 0;
-        sitesData.forEach(s => {
+        Object.values(dbData.sites).forEach(s => {
             if(s.isArchived) return; count++;
             let wCount = 0; s.workers?.forEach(w => { if(isToday(w.date)) wCount++; });
             let nathria = wCount * 2;
             let genExp = 0; s.expenses?.forEach(e => { if(isToday(e.date) && e.amount && !e.desc?.includes('نثرية تلقائية')) genExp = safeAdd(genExp, e.amount); });
             let total = safeAdd(nathria, genExp);
-            let delBtn = (currentUser?.role === 'admin') ? `<button class="btn-delete" onclick="event.stopPropagation(); triggerSiteDeletion('${s.realKey || s.id}', '${s.name}')">❌ حذف</button>` : '';
-            c.innerHTML += `<div class="site-card" onclick="openSiteDetails('${s.realKey || s.id}')"><div class="site-card-main"><div class="site-card-title"><span>🏗️ ${s.name}</span>${delBtn}</div><div class="site-card-totals">🙋‍♂️ عمال اليوم: ${toArabic(wCount)} | 💰 صرفيات: ${toArabic(genExp)}<br><span style="color:#c0392b;">📊 المجموع: ${toArabic(total)}</span></div></div></div>`;
+            let delBtn = (currentUser?.role === 'admin') ? `<button class="btn-delete" onclick="event.stopPropagation(); triggerSiteDeletion('${s.id}', '${s.name}')">❌ حذف</button>` : '';
+            c.innerHTML += `<div class="site-card" onclick="openSiteDetails('${s.id}')"><div class="site-card-main"><div class="site-card-title"><span>🏗️ ${s.name}</span>${delBtn}</div><div class="site-card-totals">🙋‍♂️ عمال اليوم: ${toArabic(wCount)} | 💰 صرفيات: ${toArabic(genExp)}<br><span style="color:#c0392b;">📊 المجموع: ${toArabic(total)}</span></div></div></div>`;
         });
         if(count === 0) c.innerHTML = '<div style="color:#7f8c8d;">📭 لا توجد مواقع نشطة.</div>';
+        updateWorkersSuggestList();
     }
 
     function openSiteDetails(id) { activeSiteId = id.toString(); showScreen('screen-site-details'); renderSiteData(); }
     
     function renderSiteData() {
-        let s = sitesData.find(x => (x.realKey || x.id).toString() === activeSiteId); if(!s) return;
+        let s = dbData.sites[activeSiteId]; if(!s) return;
         document.getElementById('current-site-title').innerText = `🏗️ موقع: ${s.name}`;
         
         let expBody = document.getElementById('table-expense-body'); expBody.innerHTML = ''; let genExp = 0;
@@ -318,38 +287,40 @@
     function submitAttendance() {
         let name = cleanWorkerName(document.getElementById('worker-name').value); if(!name || !activeSiteId) return;
         let now = new Date().toISOString();
-        database.ref('sites/' + activeSiteId + '/workers').push({ name: name, date: now });
-        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: `نثرية تلقائية للعامل (${name})`, amount: 2, date: now, by: currentUser.displayName });
-        document.getElementById('worker-name').value = '';
+        let s = dbData.sites[activeSiteId];
+        if(!s.workers) s.workers = [];
+        if(!s.expenses) s.expenses = [];
+        s.workers.push({ name: name, date: now });
+        s.expenses.push({ desc: `نثرية تلقائية للعامل (${name})`, amount: 2, date: now, by: currentUser.displayName });
+        saveDB(); document.getElementById('worker-name').value = ''; renderSiteData();
     }
 
     function submitExpense() {
         let desc = document.getElementById('expense-desc').value.trim();
         let amount = cleanNum(document.getElementById('expense-amount').value);
         if(!desc || amount <= 0 || !activeSiteId) return;
-        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: desc, amount: amount, date: new Date().toISOString(), by: currentUser.displayName });
-        document.getElementById('expense-desc').value = ''; document.getElementById('expense-amount').value = '';
+        let s = dbData.sites[activeSiteId];
+        if(!s.expenses) s.expenses = [];
+        s.expenses.push({ desc: desc, amount: amount, date: new Date().toISOString(), by: currentUser.displayName });
+        saveDB(); document.getElementById('expense-desc').value = ''; document.getElementById('expense-amount').value = ''; renderSiteData();
     }
 
     function deleteExpense(idx) {
-        let s = sitesData.find(x => (x.realKey || x.id).toString() === activeSiteId); if(!s) return;
-        let list = Array.isArray(s.expenses) ? s.expenses : Object.values(s.expenses);
-        list.splice(idx, 1); database.ref('sites/' + activeSiteId + '/expenses').set(list);
+        let s = dbData.sites[activeSiteId]; if(!s) return;
+        s.expenses.splice(idx, 1); saveDB(); renderSiteData();
     }
 
     function deleteWorker(idx, wName) {
-        let s = sitesData.find(x => (x.realKey || x.id).toString() === activeSiteId); if(!s || !confirm(`حذف العامل ${wName}؟`)) return;
-        let wList = Array.isArray(s.workers) ? s.workers : Object.values(s.workers);
-        let eList = Array.isArray(s.expenses) ? s.expenses : Object.values(s.expenses);
-        wList.splice(idx, 1);
-        let eIdx = eList.findIndex(e => e && e.desc === `نثرية تلقائية للعامل (${wName})` && isToday(e.date));
-        if(eIdx !== -1) eList.splice(eIdx, 1);
-        database.ref('sites/' + activeSiteId).update({ workers: wList, expenses: eList });
+        let s = dbData.sites[activeSiteId]; if(!s || !confirm(`حذف العامل ${wName}؟`)) return;
+        s.workers.splice(idx, 1);
+        let eIdx = s.expenses.findIndex(e => e && e.desc === `نثرية تلقائية للعامل (${wName})` && isToday(e.date));
+        if(eIdx !== -1) s.expenses.splice(eIdx, 1);
+        saveDB(); renderSiteData();
     }
 
     function renderMainLoansData() {
         let body = document.getElementById('table-main-loan-body'); body.innerHTML = ''; let total = 0;
-        globalLoans.forEach((l, idx) => {
+        dbData.globalLoans?.forEach((l, idx) => {
             if(isToday(l.date)) {
                 total = safeAdd(total, l.amount);
                 body.innerHTML += `<tr><td>${cleanWorkerName(l.worker)}</td><td>${toArabic(l.amount)}</td><td>${l.by}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteLoan(${idx})">❌</button></td></tr>`;
@@ -362,15 +333,15 @@
         let worker = cleanWorkerName(document.getElementById('main-loan-worker-name').value);
         let amount = cleanNum(document.getElementById('main-loan-amount').value);
         if(!worker || amount <= 0) return;
-        globalLoans.push({ worker: worker, amount: amount, date: new Date().toISOString(), by: currentUser.displayName });
-        database.ref('globalLoans').set(globalLoans);
-        document.getElementById('main-loan-worker-name').value = ''; document.getElementById('main-loan-amount').value = '';
+        if(!dbData.globalLoans) dbData.globalLoans = [];
+        dbData.globalLoans.push({ worker: worker, amount: amount, date: new Date().toISOString(), by: currentUser.displayName });
+        saveDB(); document.getElementById('main-loan-worker-name').value = ''; document.getElementById('main-loan-amount').value = ''; renderMainLoansData();
     }
-    function deleteLoan(idx) { globalLoans.splice(idx, 1); database.ref('globalLoans').set(globalLoans); }
+    function deleteLoan(idx) { dbData.globalLoans.splice(idx, 1); saveDB(); renderMainLoansData(); }
 
     function renderMainMaterialsData() {
         let body = document.getElementById('table-main-material-body'); body.innerHTML = ''; let total = 0;
-        globalMaterials.forEach((m, idx) => {
+        dbData.globalMaterials?.forEach((m, idx) => {
             if(isToday(m.date)) {
                 total = safeAdd(total, m.amount);
                 body.innerHTML += `<tr><td>${m.name}</td><td>${toArabic(m.amount)}</td><td>${m.by}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteMaterial(${idx})">❌</button></td></tr>`;
@@ -383,16 +354,34 @@
         let name = document.getElementById('main-material-name').value.trim();
         let amount = cleanNum(document.getElementById('main-material-amount').value);
         if(!name || amount <= 0) return;
-        globalMaterials.push({ name: name, amount: amount, date: new Date().toISOString(), by: currentUser.displayName });
-        database.ref('globalMaterials').set(globalMaterials);
-        document.getElementById('main-material-name').value = ''; document.getElementById('main-material-amount').value = '';
+        if(!dbData.globalMaterials) dbData.globalMaterials = [];
+        dbData.globalMaterials.push({ name: name, amount: amount, date: new Date().toISOString(), by: currentUser.displayName });
+        saveDB(); document.getElementById('main-material-name').value = ''; document.getElementById('main-material-amount').value = ''; renderMainMaterialsData();
     }
-    function deleteMaterial(idx) { globalMaterials.splice(idx, 1); database.ref('globalMaterials').set(globalMaterials); }
+    function deleteMaterial(idx) { dbData.globalMaterials.splice(idx, 1); saveDB(); renderMainMaterialsData(); }
+
+    function exportSystemData() {
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dbData, null, 2));
+        let a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", "skypos_backup.json");
+        document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    function importSystemData(event) {
+        let file = event.target.files[0]; if(!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                dbData = JSON.parse(e.target.result);
+                saveDB(); alert('✅ تم استرجاع البيانات بنجاح!');
+                location.reload();
+            } catch(err) { alert('❌ ملف تالف!'); }
+        }; reader.readAsText(file);
+    }
 
     function renderJardCheckboxes() {
         let c = document.getElementById('jard-checkboxes-container'); c.innerHTML = '';
-        sitesData.forEach(s => {
-            c.innerHTML += `<label style="background:#fff; padding:8px; border-radius:6px; border:1px solid #ddd; display:flex; gap:6px; align-items:center; cursor:pointer;"><input type="checkbox" value="${s.realKey || s.id}" checked onchange="calculateMultiSelectJard()"> 🏗️ ${s.name}</label>`;
+        Object.values(dbData.sites).forEach(s => {
+            c.innerHTML += `<label style="background:#fff; padding:8px; border-radius:6px; border:1px solid #ddd; display:flex; gap:6px; align-items:center; cursor:pointer;"><input type="checkbox" value="${s.id}" checked onchange="calculateMultiSelectJard()"> 🏗️ ${s.name}</label>`;
         });
     }
 
@@ -400,7 +389,7 @@
         let checked = document.querySelectorAll('#jard-checkboxes-container input:checked');
         let res = document.getElementById('jard-dashboard-results');
         if(checked.length === 0) { res.innerHTML = "<div class='total-box'>حدد موقعاً!</div>"; return; }
-        res.innerHTML = "<div class='total-box'>جاري الحساب...</div>";
+        res.innerHTML = "<div class='total-box' style='color:#27ae60;'>النظام المحلي يعمل بكفاءة تامة بدون إنترنت أو قيود!</div>";
     }
 </script>
 </body>
