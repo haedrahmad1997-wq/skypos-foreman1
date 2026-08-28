@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>النظام المحاسبي السحابي - سكاي بوس</title>
-    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2316a34a'/><text x='50' y='65' font-size='50' font-weight='bold' font-family='Arial' fill='%23ffffff' text-anchor='middle'>SB</text></svg>">
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -33,15 +31,8 @@
         .welcome-text { color: #e67e22; font-weight: bold; margin-bottom: 5px; font-size: 16px; }
         .live-time { color: #7f8c8d; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
         .btn-delete { background-color: #e74c3c; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-edit { background-color: #3498db; color: white; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
-        .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; text-align: right; }
-        .checkbox-item { background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: flex-start; gap: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
-        .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; }
-        .security-box { background-color: #fef9e7; border: 2px solid #f39c12; padding: 20px; border-radius: 10px; text-align: right; margin-bottom: 20px; }
-        .btn-backup-all { background-color: #e67e22; font-size: 16px; font-weight: bold; color: white; padding: 14px; border-radius: 6px; border: none; width: 100%; cursor: pointer; }
         .main-nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .btn-main-nav { margin-bottom: 0; font-size: 14px; padding: 14px 10px; }
-        .merge-box { background-color: #eaf2f8; border: 2px solid #2980b9; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: right; }
     </style>
 </head>
 <body>
@@ -52,14 +43,8 @@
     <div id="screen-login">
         <h1>🔒 تسجيل الدخول للنظام السحابي</h1>
         <div class="section">
-            <div class="form-group">
-                <label>اسم المستخدم:</label>
-                <input type="text" id="username-input" placeholder="اسم المستخدم...">
-            </div>
-            <div class="form-group">
-                <label>الرمز السري (Password):</label>
-                <input type="password" id="password-input" placeholder="الرمز السري...">
-            </div>
+            <div class="form-group"><label>اسم المستخدم:</label><input type="text" id="username-input" placeholder="اسم المستخدم..."></div>
+            <div class="form-group"><label>الرمز السري:</label><input type="password" id="password-input" placeholder="الرمز السري..."></div>
             <button class="btn-login" onclick="handleSecurityLogin()">تسجيل الدخول</button>
         </div>
     </div>
@@ -73,11 +58,10 @@
             <button class="btn-main-nav" style="background-color: #16a085; grid-column: span 2;" onclick="goToJardScreen()">📊 فرز وجرد المواقع</button>
             <button class="btn-main-nav" style="background-color: #d35400;" onclick="goToMainLoansScreen()">💵 سلفة عمال</button>
             <button class="btn-main-nav" style="background-color: #27ae60;" onclick="goToMainMaterialsScreen()">🧱 مواد إنشائية</button>
-            <button id="btn-security-nav" class="btn-main-nav hidden" style="background-color: #9b59b6; grid-column: span 2;" onclick="goToSecurityScreen()">🛡️ مركز حماية البيانات والدمج</button>
         </div>
 
         <div id="admin-only-tools" class="hidden">
-            <div class="section" id="add-site-section">
+            <div class="section">
                 <h2>إضافة موقع جديد</h2>
                 <input type="text" id="new-site-name" placeholder="أدخل اسم الموقع الجديد..." style="margin-bottom: 10px;">
                 <button onclick="createNewSite()">إنشاء الموقع +</button>
@@ -90,79 +74,33 @@
         <button class="btn-back" style="margin-top: 20px;" onclick="handleLogoutSystem()">تسجيل الخروج</button>
     </div>
 
-    <div id="screen-security-dashboard" class="hidden">
-        <h1>🛡️ لوحة أمان وحماية الحسابات والدمج</h1>
-        <div class="section" style="background-color: #e8f8f5; border: 2px solid #16a085;">
-            <h3 style="color: #16a085; margin-top: 0;">📁 إدارة وأرشفة المواقع:</h3>
-            <button style="background-color: #16a085; font-size: 15px;" onclick="goToArchiveScreen()">📂 الدخول إلى صفحة أرشفة واسترجاع المواقع</button>
-        </div>
-        <div class="merge-box">
-            <h3 style="color: #2980b9; margin-top: 0;">🔀 أداة دمج وتصحيح أسماء العمال المكررة:</h3>
-            <div class="form-group"><label>1️⃣ الاسم الخطأ / المكرر:</label><input type="text" id="old-worker-name" list="workers-suggest-list" placeholder="الاسم المكرر..."></div>
-            <div class="form-group"><label>2️⃣ الاسم الصحيح المعتمد:</label><input type="text" id="target-worker-name" list="workers-suggest-list" placeholder="الاسم الصحيح والموحد..."></div>
-            <button style="background-color: #2980b9; font-size:15px;" onclick="executeMergeWorkers()">🔀 تنفيذ الدمج الآمن ونقل كافة السجلات</button>
-        </div>
-        <div class="security-box">
-            <h3 style="color: #d35400; margin-top: 0;">💾 النسخ الاحتياطي التلقائي اليومي</h3>
-            <button class="btn-backup-all" onclick="downloadSystemBackup()">📥 تحميل كافة ملفات الحسابات والمواقع تلقائياً</button>
-            <input type="file" id="restore-file-input" accept=".json" style="margin-top:6px; width:100%;" onchange="restoreSystemFromBackup(event)">
-        </div>
-        <button class="btn-back" style="width: 100%;" onclick="goToHomeScreen()">الرجوع للواجهة الرئيسية</button>
-    </div>
-
-    <div id="screen-archive-dashboard" class="hidden">
-        <h1>📂 واجهة أرشفة واسترجاع المواقع</h1>
-        <div class="section"><h3 style="color: #2c3e50; margin-top: 0;">🏗️ المواقع النشطة:</h3><div id="active-sites-archive-list"></div></div>
-        <div class="section" style="background-color: #fcf4ff; border: 1px solid #e8ccf4; margin-top: 20px;"><h3 style="color: #8e44ad; margin-top: 0;">📦 المواقع المؤرشفة:</h3><div id="archived-sites-list"></div></div>
-        <button class="btn-back" style="width: 100%; margin-top: 15px;" onclick="goToSecurityScreen()">الرجوع لمركز حماية البيانات</button>
-    </div>
-
     <div id="screen-jard-dashboard" class="hidden">
         <h1>📊 لوحة فرز وجرد المواقع</h1>
-        <div class="section" style="background-color: #fcf4ff; border: 1px solid #e8ccf4;">
+        <div class="section">
             <h3>📅 فترة الجرد الزمني</h3>
             <div style="display: flex; gap: 10px;">
                 <div style="flex: 1;"><label>من تاريخ:</label><input type="date" id="jard-start-date" onchange="calculateMultiSelectJard()"></div>
                 <div style="flex: 1;"><label>إلى تاريخ:</label><input type="date" id="jard-end-date" onchange="calculateMultiSelectJard()"></div>
             </div>
-            <p id="foreman-jard-notice" style="color: #c0392b; font-size:12px; margin-top:5px; font-weight:bold; display:none;">⚠️ حساب فورمن: الجرد مقفل على تاريخ اليوم الحالي فقط.</p>
         </div>
         <div class="section">
-            <h3>🗂️ حدد المواقع المراد جردها معاً:</h3>
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <button style="background-color: #2980b9;" onclick="selectAllJardSites(true)">📋 تحديد كافة المواقع</button>
-                <button style="background-color: #e74c3c;" onclick="selectAllJardSites(false)">❌ إلغاء تحديد الجميع</button>
-            </div>
-            <div id="jard-checkboxes-container" class="checkbox-group"></div>
+            <h3>🗂️ المواقع المراد جردها:</h3>
+            <div id="jard-checkboxes-container" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px; text-align:right;"></div>
         </div>
         <div id="jard-dashboard-results" style="margin-top: 15px;"></div>
-        <button class="btn-back" style="width: 100%; margin-top: 15px;" onclick="goToHomeScreen()">الرجوع للواجهة الرئيسية</button>
+        <button class="btn-back" style="width: 100%; margin-top: 15px;" onclick="goToHomeScreen()">الرجوع للرئيسية</button>
     </div>
 
     <div id="screen-main-loans" class="hidden">
         <h1>💵 مركز إدارة سلف العمال</h1>
         <div class="section">
-            <input type="text" id="main-loan-worker-name" list="workers-suggest-list" placeholder="اختر أو ادخل اسم العامل..." style="margin-bottom: 10px;">
-            <input type="text" id="main-loan-amount" placeholder="مبلغ السلفة بالارقام..." style="margin-bottom: 10px;">
-            <button id="btn-submit-loan" style="background-color: #e67e22;" onclick="submitMainLoan()">حفظ السلفة اليومية</button>
-        </div>
-        <div class="section" style="overflow-x:auto;">
-            <table>
-                <thead><tr><th>اسم العامل</th><th>المبلغ الكلي اليومي</th><th>بواسطة</th><th>تعديل</th><th>حذف الحساب</th></tr></thead>
-                <tbody id="table-main-loan-body"></tbody>
-            </table>
+            <input type="text" id="main-loan-worker-name" list="workers-suggest-list" placeholder="اسم العامل..." style="margin-bottom: 10px;">
+            <input type="text" id="main-loan-amount" placeholder="مبلغ السلفة..." style="margin-bottom: 10px;">
+            <button style="background-color: #e67e22;" onclick="submitMainLoan()">حفظ السلفة اليومية</button>
+            <table><thead><tr><th>العامل</th><th>المبلغ</th><th>بواسطة</th><th>حذف</th></tr></thead><tbody id="table-main-loan-body"></tbody></table>
         </div>
         <div class="total-box" id="main-loan-today-total">إجمالي سلف اليوم = ٠</div>
-        <div class="section" style="background-color: #ebf5fb; border: 1px solid #a9ccee; margin-top: 20px;">
-            <h3>📊 جرد وتقارير السلف المخصصة</h3>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <div style="flex: 1;"><label>من تاريخ:</label><input type="date" id="loan-jard-start" onchange="calculateLoansJard()"></div>
-                <div style="flex: 1;"><label>إلى تاريخ:</label><input type="date" id="loan-jard-end" onchange="calculateLoansJard()"></div>
-            </div>
-            <div id="loan-jard-details-container" style="margin-top: 10px;"></div>
-            <div id="loan-jard-result" class="total-box" style="background-color: #fff; border: 1px dashed #2471a3; color:#c0392b; font-size:18px;">المجموع المفلتر لسلف الفترة = ٠</div>
-        </div>
-        <button class="btn-back" style="width: 100%; margin-top:15px;" onclick="goToHomeScreen()">الرجوع للواجهة الرئيسية</button>
+        <button class="btn-back" style="width: 100%; margin-top:15px;" onclick="goToHomeScreen()">الرجوع للرئيسية</button>
     </div>
 
     <div id="screen-main-materials" class="hidden">
@@ -170,48 +108,30 @@
         <div class="section">
             <input type="text" id="main-material-name" placeholder="اسم المادة..." style="margin-bottom: 10px;">
             <input type="text" id="main-material-amount" placeholder="المبلغ..." style="margin-bottom: 10px;">
-            <button style="background-color: #2ecc71;" onclick="submitMainMaterial()">حفظ المادة اليومية</button>
-            <table>
-                <thead><tr><th>اسم المادة</th><th>المبلغ</th><th>بواسطة</th><th>حذف</th></tr></thead>
-                <tbody id="table-main-material-body"></tbody>
-            </table>
+            <button style="background-color: #2ecc71;" onclick="submitMainMaterial()">حفظ المادة</button>
+            <table><thead><tr><th>المادة</th><th>المبلغ</th><th>بواسطة</th><th>حذف</th></tr></thead><tbody id="table-main-material-body"></tbody></table>
         </div>
-        <div class="total-box" id="main-material-today-total">إجمالي حساب مواد اليوم الحالي = ٠</div>
-        <div class="section" style="background-color: #e8f8f5; border: 1px solid #a3e4d7; margin-top: 20px;">
-            <h3>📊 جرد وتقارير المواد المخصصة</h3>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <div style="flex: 1;"><label>من تاريخ:</label><input type="date" id="material-jard-start" onchange="calculateMaterialsJard()"></div>
-                <div style="flex: 1;"><label>إلى تاريخ:</label><input type="date" id="material-jard-end" onchange="calculateMaterialsJard()"></div>
-            </div>
-            <div id="material-jard-details-container" style="margin-top: 10px;"></div>
-            <div id="material-jard-result" class="total-box" style="background-color: #fff; border: 1px dashed #117a65; color:#c0392b; font-size:18px;">المجموع المفلتر لمواد الفترة = ٠</div>
-        </div>
-        <button class="btn-back" style="width: 100%; margin-top:15px;" onclick="goToHomeScreen()">الرجوع للواجهة الرئيسية</button>
+        <div class="total-box" id="main-material-today-total">إجمالي مواد اليوم = ٠</div>
+        <button class="btn-back" style="width: 100%; margin-top:15px;" onclick="goToHomeScreen()">الرجوع للرئيسية</button>
     </div>
 
     <div id="screen-site-details" class="hidden">
         <h1 id="current-site-title">اسم الموقع</h1>
         <div class="section">
-            <h2>👥 تسجيل حضور العمال (اليوم)</h2>
-            <input type="text" id="worker-name" list="workers-suggest-list" placeholder="اختر أو ادخل اسم العامل..." style="margin-bottom: 10px;">
-            <button style="background-color: #3498db;" onclick="submitAttendance()">تسجيل الحضور والنثرية ✓</button>
-            <table>
-                <thead><tr><th>اسم العامل</th><th>الوقت</th><th>حذف</th></tr></thead>
-                <tbody id="table-attendance-body"></tbody>
-            </table>
+            <h2>👥 حضور العمال</h2>
+            <input type="text" id="worker-name" list="workers-suggest-list" placeholder="اسم العامل..." style="margin-bottom: 10px;">
+            <button style="background-color: #3498db;" onclick="submitAttendance()">تسجيل الحضور ✓</button>
+            <table><thead><tr><th>العامل</th><th>الوقت</th><th>حذف</th></tr></thead><tbody id="table-attendance-body"></tbody></table>
         </div>
         <div class="section">
-            <h2>💰 إدارة الصرفيات والمصاريف (اليوم)</h2>
+            <h2>💰 الصرفيات</h2>
             <input type="text" id="expense-desc" placeholder="بيان الصرف..." style="margin-bottom: 10px;">
             <input type="text" id="expense-amount" placeholder="المبلغ..." style="margin-bottom: 10px;">
             <button onclick="submitExpense()">حفظ الصرفية</button>
-            <table>
-                <thead><tr><th>البيان</th><th>المبلغ</th><th>بواسطة</th><th>حذف</th></tr></thead>
-                <tbody id="table-expense-body"></tbody>
-            </table>
+            <table><thead><tr><th>البيان</th><th>المبلغ</th><th>بواسطة</th><th>حذف</th></tr></thead><tbody id="table-expense-body"></tbody></table>
         </div>
         <div class="total-box" id="site-bottom-totals"></div>
-        <button class="btn-back" style="width: 100%;" onclick="goToHomeScreen()">الرجوع للمواقع الرئيسي</button>
+        <button class="btn-back" style="width: 100%;" onclick="goToHomeScreen()">الرجوع للمواقع</button>
     </div>
 </div>
 
@@ -242,499 +162,246 @@
     let sitesData = []; 
     let activeSiteId = null; 
     let currentActiveScreen = 'screen-login'; 
-    let rawFirebaseData = {}; 
     let globalLoans = []; 
     let globalMaterials = [];
-    let editingLoanIndex = null;
 
-    function cleanWorkerName(rawName) {
-        if (!rawName) return '';
-        let name = rawName.trim().replace(/[.,،\-_]/g, '').replace(/\s+/g, ' ');
-        name = name.replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه');
-        return name.trim();
+    function cleanWorkerName(raw) {
+        if (!raw) return '';
+        return raw.trim().replace(/[.,،\-_]/g, '').replace(/\s+/g, ' ').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه');
     }
-
-    function updateWorkersSuggestList() {
-        const suggestList = document.getElementById('workers-suggest-list');
-        if (!suggestList) return;
-        let uniqueWorkers = new Set();
-        sitesData.forEach(site => {
-            if (site.workers) {
-                let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-                wList.forEach(w => { if (w && w.name) { let cName = cleanWorkerName(w.name); if (cName) uniqueWorkers.add(cName); } });
-            }
-        });
-        globalLoans.forEach(l => { if (l && l.worker) { let cName = cleanWorkerName(l.worker); if (cName) uniqueWorkers.add(cName); } });
-        suggestList.innerHTML = '';
-        Array.from(uniqueWorkers).sort().forEach(wName => {
-            let option = document.createElement('option'); option.value = wName; suggestList.appendChild(option);
-        });
+    function safeAdd(n1, n2) { return parseFloat((n1 + n2).toFixed(2)); }
+    function cleanNum(val) {
+        if (typeof val === 'string') val = val.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+        let n = parseFloat(val); return isNaN(n) ? 0 : n;
     }
-
-    function safeAdd(num1, num2) { return parseFloat((num1 + num2).toFixed(2)); }
-    function cleanAndFormatNumber(input) {
-        if (typeof input === 'string') input = input.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-        let num = parseFloat(input); return isNaN(num) ? 0 : num;
+    function toArabic(num) {
+        let s = Number(num.toFixed(2)).toString();
+        if (s.endsWith('.00')) s = s.substring(0, s.length - 3);
+        return s.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
     }
-    function toArabicDisplay(num) {
-        let cleanNum = Number(num.toFixed(2)).toString();
-        if (cleanNum.endsWith('.00')) cleanNum = cleanNum.substring(0, cleanNum.length - 3);
-        if (cleanNum.endsWith('.0')) cleanNum = cleanNum.substring(0, cleanNum.length - 2);
-        return cleanNum.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
-    }
-    function isRecordFromToday(dateString) {
-        if(!dateString) return false;
-        const d = new Date(dateString); const t = new Date();
+    function isToday(dStr) {
+        if(!dStr) return false;
+        let d = new Date(dStr), t = new Date();
         return d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear();
     }
-    function updateLiveTime() {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', calendar: 'gregory' };
-        if(document.getElementById('live-time-display')) {
-            document.getElementById('live-time-display').innerText = new Date().toLocaleDateString('ar-EG', options);
-        }
-    }
-    
-    // المزامنة تعمل فوراً وبشكل دائم بغض النظر عن حالة تسجيل الدخول
+
     function startCloudSync() {
         database.ref().on('value', (snapshot) => {
-            const root = snapshot.val() || {}; 
-            rawFirebaseData = root;
-            
-            let rawSites = root.sites || root; 
+            let root = snapshot.val() || {};
+            let rawSites = root.sites || root;
             let tempSites = [];
             
             if (rawSites) {
-                let sitesArray = Array.isArray(rawSites) ? rawSites : Object.keys(rawSites).map(k => ({ ...rawSites[k], realKey: k }));
-                
-                sitesArray.forEach(site => {
-                    if (site && (site.name || site.id) && site.realKey !== 'globalLoans' && site.realKey !== 'globalMaterials') {
-                        if(!site.realKey && site.id) site.realKey = site.id.toString();
-                        if(!site.expenses) site.expenses = []; 
-                        if(!site.workers) site.workers = [];
-                        if(typeof site.expenses === 'object' && !Array.isArray(site.expenses)) site.expenses = Object.values(site.expenses);
-                        if(typeof site.workers === 'object' && !Array.isArray(site.workers)) site.workers = Object.values(site.workers);
-                        
-                        const isDuplicate = tempSites.some(s => 
-                            (s.id && site.id && s.id.toString() === site.id.toString()) || 
-                            (s.name && site.name && s.name.trim() === site.name.trim())
-                        );
-                        if (!isDuplicate) tempSites.push(site);
+                let arr = Array.isArray(rawSites) ? rawSites : Object.keys(rawSites).map(k => ({ ...rawSites[k], realKey: k }));
+                arr.forEach(s => {
+                    if (s && (s.name || s.id) && s.realKey !== 'globalLoans' && s.realKey !== 'globalMaterials') {
+                        if(!s.realKey && s.id) s.realKey = s.id.toString();
+                        if(!s.expenses) s.expenses = [];
+                        if(!s.workers) s.workers = [];
+                        if(typeof s.expenses === 'object' && !Array.isArray(s.expenses)) s.expenses = Object.values(s.expenses);
+                        if(typeof s.workers === 'object' && !Array.isArray(s.workers)) s.workers = Object.values(s.workers);
+                        tempSites.push(s);
                     }
                 });
             }
-            
             sitesData = tempSites;
-            globalLoans = root.globalLoans || []; 
-            if(typeof globalLoans === 'object' && !Array.isArray(globalLoans)) globalLoans = Object.values(globalLoans);
-            
-            globalMaterials = root.globalMaterials || []; 
-            if(typeof globalMaterials === 'object' && !Array.isArray(globalMaterials)) globalMaterials = Object.values(globalMaterials);
+            globalLoans = Array.isArray(root.globalLoans) ? root.globalLoans : Object.values(root.globalLoans || {});
+            globalMaterials = Array.isArray(root.globalMaterials) ? root.globalMaterials : Object.values(root.globalMaterials || {});
             
             updateWorkersSuggestList();
-
-            renderSites(); 
-            if(currentActiveScreen === 'screen-jard-dashboard') { renderJardCheckboxesOnly(); calculateMultiSelectJard(); }
-            if(currentActiveScreen === 'screen-main-loans') { renderMainLoansData(); calculateLoansJard(); }
-            if(currentActiveScreen === 'screen-main-materials') { renderMainMaterialsData(); calculateMaterialsJard(); }
-            if(currentActiveScreen === 'screen-archive-dashboard') { renderArchiveScreenLists(); }
-            if(activeSiteId) renderSiteData(); 
+            if(currentUser) {
+                renderSites();
+                if(currentActiveScreen === 'screen-main-loans') renderMainLoansData();
+                if(currentActiveScreen === 'screen-main-materials') renderMainMaterialsData();
+                if(activeSiteId) renderSiteData();
+            }
         });
+    }
+
+    function updateWorkersSuggestList() {
+        let list = document.getElementById('workers-suggest-list'); if(!list) return;
+        let set = new Set();
+        sitesData.forEach(s => s.workers?.forEach(w => { if(w?.name) set.add(cleanWorkerName(w.name)); }));
+        globalLoans.forEach(l => { if(l?.worker) set.add(cleanWorkerName(l.worker)); });
+        list.innerHTML = '';
+        Array.from(set).sort().forEach(n => { let opt = document.createElement('option'); opt.value = n; list.appendChild(opt); });
     }
 
     window.onload = function() {
-        updateLiveTime(); setInterval(updateLiveTime, 1000);
-        const todayStr = new Date().toISOString().split('T')[0];
-        ['loan-jard-start', 'loan-jard-end', 'material-jard-start', 'material-jard-end'].forEach(id => {
-            if(document.getElementById(id)) document.getElementById(id).value = todayStr;
-        });
-        
-        // تشغيل الاتصال بالسيرفر فور تحميل الصفحة لضمان جلب البيانات
         startCloudSync();
-
-        const savedUser = localStorage.getItem('active_session_user');
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser); 
-            document.getElementById('welcome-msg').innerText = `المستخدم الحالي: ${currentUser.displayName}`;
-            if(currentUser.role === 'admin') { 
-                document.getElementById('admin-only-tools').classList.remove('hidden'); 
-                document.getElementById('btn-security-nav').classList.remove('hidden'); 
-            }
-            applyJardDateLimits(); 
-            showScreen('screen-home'); 
-            renderSites();
+        let saved = localStorage.getItem('active_session_user');
+        if(saved) {
+            currentUser = JSON.parse(saved);
+            document.getElementById('welcome-msg').innerText = `المستخدم: ${currentUser.displayName}`;
+            if(currentUser.role === 'admin') document.getElementById('admin-only-tools').classList.remove('hidden');
+            showScreen('screen-home'); renderSites();
         }
     };
-    
-    function applyJardDateLimits() {
-        const todayStr = new Date().toISOString().split('T')[0];
-        const s = document.getElementById('jard-start-date'); const e = document.getElementById('jard-end-date'); const n = document.getElementById('foreman-jard-notice');
-        if(s && e) {
-            s.value = todayStr; e.value = todayStr;
-            if(currentUser && currentUser.role === 'foreman') { s.disabled = true; e.disabled = true; if(n) n.style.display = 'block'; }
-            else { s.disabled = false; e.disabled = false; if(n) n.style.display = 'none'; }
-        }
+
+    function showScreen(id) {
+        currentActiveScreen = id;
+        ['screen-login', 'screen-home', 'screen-jard-dashboard', 'screen-main-loans', 'screen-main-materials', 'screen-site-details'].forEach(s => {
+            let el = document.getElementById(s); if(el) el.classList.add('hidden');
+        });
+        let target = document.getElementById(id); if(target) target.classList.remove('hidden');
     }
 
-    function showScreen(screenId) {
-        currentActiveScreen = screenId;
-        ['screen-login', 'screen-home', 'screen-jard-dashboard', 'screen-security-dashboard', 'screen-archive-dashboard', 'screen-site-details', 'screen-main-loans', 'screen-main-materials'].forEach(id => {
-            if(document.getElementById(id)) document.getElementById(id).classList.add('hidden');
-        });
-        if(document.getElementById(screenId)) document.getElementById(screenId).classList.remove('hidden');
-    }
-    
     function handleSecurityLogin() {
-        const usernameInput = document.getElementById('username-input').value.trim().toLowerCase();
-        const passwordInput = document.getElementById('password-input').value.trim();
-        if(!usernameInput || !passwordInput) { alert('❌ يرجى إدخال اسم المستخدم والرمز السري أولاً!'); return; }
-        const foundUser = usersDatabase.find(u => u.username === usernameInput && u.password === passwordInput);
-        if (foundUser) {
-            currentUser = foundUser; localStorage.setItem('active_session_user', JSON.stringify(currentUser));
-            document.getElementById('welcome-msg').innerText = `المستخدم الحالي: ${currentUser.displayName}`;
-            if(currentUser.role === 'admin') { document.getElementById('admin-only-tools').classList.remove('hidden'); document.getElementById('btn-security-nav').classList.remove('hidden'); }
-            else { document.getElementById('admin-only-tools').classList.add('hidden'); document.getElementById('btn-security-nav').classList.add('hidden'); }
-            applyJardDateLimits(); renderSites(); showScreen('screen-home'); 
-        } else { alert('❌ خطأ: اسم المستخدم أو الرمز السري غير صحيح!'); }
+        let u = document.getElementById('username-input').value.trim().toLowerCase();
+        let p = document.getElementById('password-input').value.trim();
+        let found = usersDatabase.find(x => x.username === u && x.password === p);
+        if(found) {
+            currentUser = found; localStorage.setItem('active_session_user', JSON.stringify(currentUser));
+            document.getElementById('welcome-msg').innerText = `المستخدم: ${currentUser.displayName}`;
+            if(currentUser.role === 'admin') document.getElementById('admin-only-tools').classList.remove('hidden');
+            showScreen('screen-home'); renderSites();
+        } else { alert('❌ خطأ باسم المستخدم أو الرمز!'); }
     }
-    
+
     function handleLogoutSystem() { localStorage.removeItem('active_session_user'); location.reload(); }
-    function goToSecurityScreen() { showScreen('screen-security-dashboard'); }
-    function goToArchiveScreen() { showScreen('screen-archive-dashboard'); renderArchiveScreenLists(); }
     function goToHomeScreen() { activeSiteId = null; renderSites(); showScreen('screen-home'); }
-    function goToJardScreen() { showScreen('screen-jard-dashboard'); applyJardDateLimits(); renderJardCheckboxesOnly(); calculateMultiSelectJard(); }
-    function goToMainLoansScreen() { showScreen('screen-main-loans'); editingLoanIndex = null; renderMainLoansData(); calculateLoansJard(); }
-    function goToMainMaterialsScreen() { showScreen('screen-main-materials'); renderMainMaterialsData(); calculateMaterialsJard(); }
-    
-    function toggleSiteArchiveStatus(siteRealKey, targetStatus) {
-        database.ref('sites/' + siteRealKey + '/isArchived').set(targetStatus).then(() => renderArchiveScreenLists());
-    }
-
-    function renderArchiveScreenLists() {
-        const activeContainer = document.getElementById('active-sites-archive-list');
-        const archivedContainer = document.getElementById('archived-sites-list');
-        activeContainer.innerHTML = ''; archivedContainer.innerHTML = '';
-        let activeCount = 0; let archivedCount = 0;
-
-        sitesData.forEach(site => {
-            const sKey = site.realKey || site.id;
-            if (site.isArchived) {
-                archivedCount++;
-                archivedContainer.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd; margin-bottom:8px;"><span style="font-weight:bold; color:#8e44ad;">📦 ${site.name}</span><button style="background-color: #27ae60; padding:6px 12px; font-size:13px; margin-bottom:0; width:auto;" onclick="toggleSiteArchiveStatus('${sKey}', false)">🔄 استرجاع</button></div>`;
-            } else {
-                activeCount++;
-                activeContainer.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd; margin-bottom:8px;"><span style="font-weight:bold; color:#2c3e50;">🏗️ ${site.name}</span><button style="background-color: #e67e22; padding:6px 12px; font-size:13px; margin-bottom:0; width:auto;" onclick="toggleSiteArchiveStatus('${sKey}', true)">📂 أرشفة</button></div>`;
-            }
-        });
-        if (activeCount === 0) activeContainer.innerHTML = '<div style="color:#7f8c8d; font-size:13px; text-align:center;">لا توجد مواقع نشطة حالياً.</div>';
-        if (archivedCount === 0) archivedContainer.innerHTML = '<div style="color:#7f8c8d; font-size:13px; text-align:center;">لا توجد مواقع مؤرشفة.</div>';
-    }
-
-    function executeMergeWorkers() {
-        const oldName = cleanWorkerName(document.getElementById('old-worker-name').value);
-        const targetName = cleanWorkerName(document.getElementById('target-worker-name').value);
-        if (!oldName || !targetName) { alert('❌ يرجى إدخال الاسمين!'); return; }
-        if (!confirm(`دمج (${oldName}) إلى (${targetName})؟`)) return;
-
-        sitesData.forEach(site => {
-            if (site.workers) {
-                let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-                wList.forEach(w => { if (cleanWorkerName(w.name) === oldName) w.name = targetName; });
-            }
-        });
-        globalLoans.forEach(l => { if (cleanWorkerName(l.worker) === oldName) l.worker = targetName; });
-
-        database.ref('sites').set(sitesData);
-        database.ref('globalLoans').set(globalLoans).then(() => alert('✅ تم الدمج بنجاح!'));
-    }
-
-    function downloadSystemBackup() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(rawFirebaseData, null, 2));
-        const a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", `backup.json`);
-        document.body.appendChild(a); a.click(); a.remove();
-    }
-    
-    function restoreSystemFromBackup(event) {
-        const file = event.target.files[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try { database.ref().set(JSON.parse(e.target.result), () => alert('✅ تم الاسترجاع بنجاح!')); } catch (err) { alert('❌ ملف تالف!'); }
-        }; reader.readAsText(file);
-    }
+    function goToJardScreen() { showScreen('screen-jard-dashboard'); renderJardCheckboxes(); calculateMultiSelectJard(); }
+    function goToMainLoansScreen() { showScreen('screen-main-loans'); renderMainLoansData(); }
+    function goToMainMaterialsScreen() { showScreen('screen-main-materials'); renderMainMaterialsData(); }
 
     function createNewSite() {
-        if(currentUser.role !== 'admin') return; 
-        const name = document.getElementById('new-site-name').value.trim(); 
-        if(!name) return;
-        const sId = Date.now().toString(); 
-        database.ref('sites/' + sId).set({ id: sId, name: name, expenses: [], workers: [], isArchived: false }); 
+        if(currentUser.role !== 'admin') return;
+        let name = document.getElementById('new-site-name').value.trim(); if(!name) return;
+        let id = Date.now().toString();
+        database.ref('sites/' + id).set({ id: id, name: name, expenses: [], workers: [], isArchived: false });
         document.getElementById('new-site-name').value = '';
     }
 
-    function triggerSiteDeletion(siteId, siteName) {
-        if (confirm(`حذف موقع (${siteName})؟`)) database.ref('sites/' + siteId).remove();
+    function triggerSiteDeletion(id, name) {
+        if(confirm(`حذف موقع (${name})؟`)) database.ref('sites/' + id).remove();
     }
-    
+
     function renderSites() {
-        const container = document.getElementById('sites-list-container'); 
-        if(!container) return;
-        container.innerHTML = '';
-        let activeDisplayedCount = 0;
-        
-        sitesData.forEach(site => {
-            if (site.isArchived) return;
-            activeDisplayedCount++;
-            let todayWorkersCount = 0; 
-            if(site.workers) { 
-                let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-                wList.forEach(w => { if(isRecordFromToday(w.date)) todayWorkersCount++; }); 
-            }
-            let todayNathriaAmount = todayWorkersCount * 2; 
-            let todayGeneralExpenses = 0;
-            if (site.expenses) { 
-                let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-                eList.forEach(e => { if (isRecordFromToday(e.date) && e.amount && (!e.desc || !e.desc.includes("نثرية تلقائية"))) todayGeneralExpenses = safeAdd(todayGeneralExpenses, e.amount); }); 
-            }
-            let todaySiteSum = safeAdd(todayNathriaAmount, todayGeneralExpenses); 
-            const card = document.createElement('div'); 
-            card.className = 'site-card';
-            let deleteBtnHtml = (currentUser && currentUser.role === 'admin') ? `<button class="btn-delete" onclick="event.stopPropagation(); triggerSiteDeletion('${site.realKey || site.id}', '${site.name}')">❌ حذف</button>` : '';
-            card.innerHTML = `<div class="site-card-main" onclick="openSiteDetails('${site.realKey || site.id}')"><div class="site-card-title"><span>🏗️ ${site.name}</span>${deleteBtnHtml}</div><div class="site-card-totals"><div>🙋‍♂️ عمال اليوم: ${toArabicDisplay(todayWorkersCount)} | 💰 صرفيات: ${toArabicDisplay(todayGeneralExpenses)}</div><div style="color: #c0392b; font-size: 14px; margin-top: 4px;">📊 مجموع اليوم: ${toArabicDisplay(todaySiteSum)}</div></div></div>`;
-            container.appendChild(card);
+        let c = document.getElementById('sites-list-container'); if(!c) return;
+        c.innerHTML = ''; let count = 0;
+        sitesData.forEach(s => {
+            if(s.isArchived) return; count++;
+            let wCount = 0; s.workers?.forEach(w => { if(isToday(w.date)) wCount++; });
+            let nathria = wCount * 2;
+            let genExp = 0; s.expenses?.forEach(e => { if(isToday(e.date) && e.amount && !e.desc?.includes('نثرية تلقائية')) genExp = safeAdd(genExp, e.amount); });
+            let total = safeAdd(nathria, genExp);
+            let delBtn = (currentUser?.role === 'admin') ? `<button class="btn-delete" onclick="event.stopPropagation(); triggerSiteDeletion('${s.realKey || s.id}', '${s.name}')">❌ حذف</button>` : '';
+            c.innerHTML += `<div class="site-card" onclick="openSiteDetails('${s.realKey || s.id}')"><div class="site-card-main"><div class="site-card-title"><span>🏗️ ${s.name}</span>${delBtn}</div><div class="site-card-totals">🙋‍♂️ عمال اليوم: ${toArabic(wCount)} | 💰 صرفيات: ${toArabic(genExp)}<br><span style="color:#c0392b;">📊 المجموع: ${toArabic(total)}</span></div></div></div>`;
         });
-        if (activeDisplayedCount === 0) container.innerHTML = '<div style="color:#7f8c8d; padding:10px;">📭 لا توجد مواقع نشطة حالياً.</div>';
-    }
-    
-    function renderMainLoansData() {
-        const loanBody = document.getElementById('table-main-loan-body'); if(!loanBody) return;
-        loanBody.innerHTML = ''; let todayLoansTotal = 0;
-        globalLoans.forEach((l, index) => { 
-            if(isRecordFromToday(l.date)) { 
-                todayLoansTotal = safeAdd(todayLoansTotal, l.amount); 
-                let editBtn = `<button class="btn-edit" onclick="startEditLoan(${index})">✍️</button>`;
-                let delBtn = `<button class="btn-delete" style="padding:4px 8px;" onclick="deleteMainLoan(${index})">❌</button>`; 
-                loanBody.innerHTML += `<tr><td>${cleanWorkerName(l.worker)}</td><td>${toArabicDisplay(l.amount)}</td><td>${l.by}</td><td>${editBtn}</td><td>${delBtn}</td></tr>`; 
-            } 
-        });
-        document.getElementById('main-loan-today-total').innerText = `إجمالي سلف اليوم الحالي = ${toArabicDisplay(todayLoansTotal)}`;
-    }
-    
-    function startEditLoan(index) {
-        editingLoanIndex = index;
-        document.getElementById('main-loan-worker-name').value = cleanWorkerName(globalLoans[index].worker);
-        document.getElementById('main-loan-amount').value = globalLoans[index].amount;
-        document.getElementById('btn-submit-loan').innerText = "تحديث السلفة ✓";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if(count === 0) c.innerHTML = '<div style="color:#7f8c8d;">📭 لا توجد مواقع نشطة.</div>';
     }
 
-    function submitMainLoan() {
-        const worker = cleanWorkerName(document.getElementById('main-loan-worker-name').value); 
-        const amount = cleanAndFormatNumber(document.getElementById('main-loan-amount').value.trim()); 
-        if(!worker || amount <= 0) return;
-        
-        if (editingLoanIndex !== null) {
-            globalLoans[editingLoanIndex].worker = worker;
-            globalLoans[editingLoanIndex].amount = amount;
-            editingLoanIndex = null;
-            document.getElementById('btn-submit-loan').innerText = "حفظ السلفة اليومية";
-        } else {
-            globalLoans.push({ worker: worker, amount: amount, date: new Date().toISOString(), by: currentUser.displayName }); 
-        }
-        database.ref('globalLoans').set(globalLoans); 
-        document.getElementById('main-loan-worker-name').value = ''; 
-        document.getElementById('main-loan-amount').value = '';
-    }
-    
-    function deleteMainLoan(index) { globalLoans.splice(index, 1); database.ref('globalLoans').set(globalLoans); }
-
-    function calculateLoansJard() {
-        let sDate = document.getElementById('loan-jard-start').value ? new Date(document.getElementById('loan-jard-start').value) : null; if(sDate) sDate.setHours(0,0,0,0);
-        let eDate = document.getElementById('loan-jard-end').value ? new Date(document.getElementById('loan-jard-end').value) : null; if(eDate) eDate.setHours(23,59,59,999);
-        let filteredTotal = 0; let workerLoansList = [];
-        globalLoans.forEach(l => { 
-            let lDate = new Date(l.date); 
-            if ((!sDate || lDate >= sDate) && (!eDate || lDate <= eDate)) {
-                filteredTotal = safeAdd(filteredTotal, l.amount); 
-                workerLoansList.push({ worker: cleanWorkerName(l.worker), amount: l.amount, by: l.by || 'غير معروف' });
-            } 
-        });
-        const container = document.getElementById('loan-jard-details-container'); if(!container) return;
-        if (workerLoansList.length > 0) {
-            let html = `<table style="width:100%; border-collapse:collapse; background:#fff;"><thead><tr style="background:#2471a3; color:#fff;"><th>العامل</th><th>المبلغ</th><th>بواسطة</th></tr></thead><tbody>`;
-            workerLoansList.forEach(item => { html += `<tr><td>${item.worker}</td><td>${toArabicDisplay(item.amount)}</td><td>${item.by}</td></tr>`; });
-            container.innerHTML = html + `</tbody></table>`;
-        } else { container.innerHTML = '<div style="color:#7f8c8d; text-align:center;">لا توجد سلف بالفترة.</div>'; }
-        document.getElementById('loan-jard-result').innerText = `المجموع المفلتر = ${toArabicDisplay(filteredTotal)}`;
-    }
-    
-    function renderMainMaterialsData() {
-        const matBody = document.getElementById('table-main-material-body'); if(!matBody) return;
-        matBody.innerHTML = ''; let total = 0;
-        globalMaterials.forEach((m, index) => { 
-            if(isRecordFromToday(m.date)) { 
-                total = safeAdd(total, m.amount); 
-                matBody.innerHTML += `<tr><td>${m.name}</td><td>${toArabicDisplay(m.amount)}</td><td>${m.by}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteMainMaterial(${index})">❌</button></td></tr>`; 
-            } 
-        });
-        document.getElementById('main-material-today-total').innerText = `إجمالي المواد = ${toArabicDisplay(total)}`;
-    }
-    function submitMainMaterial() {
-        const name = document.getElementById('main-material-name').value.trim(); 
-        const amount = cleanAndFormatNumber(document.getElementById('main-material-amount').value.trim()); 
-        if(!name || amount <= 0) return;
-        globalMaterials.push({ name: name, amount: amount, date: new Date().toISOString(), by: currentUser.displayName }); 
-        database.ref('globalMaterials').set(globalMaterials); 
-        document.getElementById('main-material-name').value = ''; document.getElementById('main-material-amount').value = '';
-    }
-    function deleteMainMaterial(index) { globalMaterials.splice(index, 1); database.ref('globalMaterials').set(globalMaterials); }
-    
-    function calculateMaterialsJard() {
-        let sDate = document.getElementById('material-jard-start').value ? new Date(document.getElementById('material-jard-start').value) : null; if(sDate) sDate.setHours(0,0,0,0);
-        let eDate = document.getElementById('material-jard-end').value ? new Date(document.getElementById('material-jard-end').value) : null; if(eDate) eDate.setHours(23,59,59,999);
-        let total = 0; let list = [];
-        globalMaterials.forEach(m => { 
-            let mDate = new Date(m.date); 
-            if ((!sDate || mDate >= sDate) && (!eDate || mDate <= eDate)) {
-                total = safeAdd(total, m.amount);
-                list.push({ name: m.name, amount: m.amount, by: m.by });
-            } 
-        });
-        const container = document.getElementById('material-jard-details-container'); if(!container) return;
-        if (list.length > 0) {
-            let html = `<table style="width:100%; border-collapse:collapse; background:#fff;"><thead><tr style="background:#16a085; color:#fff;"><th>المادة</th><th>المبلغ</th><th>بواسطة</th></tr></thead><tbody>`;
-            list.forEach(i => { html += `<tr><td>${i.name}</td><td>${toArabicDisplay(i.amount)}</td><td>${i.by}</td></tr>`; });
-            container.innerHTML = html + `</tbody></table>`;
-        } else { container.innerHTML = '<div style="color:#7f8c8d; text-align:center;">لا توجد مواد بالفترة.</div>'; }
-        document.getElementById('material-jard-result').innerText = `المجموع المفلتر = ${toArabicDisplay(total)}`;
-    }
-    
-    function renderJardCheckboxesOnly() {
-        const container = document.getElementById('jard-checkboxes-container'); if(!container) return;
-        let checkedSavedIds = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value); 
-        container.innerHTML = '';
-        sitesData.forEach(site => {
-            const label = document.createElement('label'); label.className = 'checkbox-item'; 
-            const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = site.realKey || site.id; cb.onchange = calculateMultiSelectJard;
-            if (checkedSavedIds.includes(cb.value) || checkedSavedIds.length === 0) cb.checked = true;
-            label.appendChild(cb); label.appendChild(document.createTextNode(` 🏗️ ${site.name}`)); 
-            container.appendChild(label);
-        });
-    }
-    function selectAllJardSites(status) { document.querySelectorAll('#jard-checkboxes-container input[type="checkbox"]').forEach(cb => cb.checked = status); calculateMultiSelectJard(); }
-    
-    function calculateMultiSelectJard() {
-        const checkedBoxes = document.querySelectorAll('#jard-checkboxes-container input[type="checkbox"]:checked'); 
-        const Jack = document.getElementById('jard-dashboard-results'); if(!Jack) return;
-        if (checkedBoxes.length === 0) { Jack.innerHTML = "<div class='total-box'>⚠️ حدد موقعاً!</div>"; return; }
-        
-        let startStr = document.getElementById('jard-start-date').value; 
-        let endStr = document.getElementById('jard-end-date').value; 
-        let totalW = 0, totalN = 0, totalE = 0; let siteNames = []; let htmlTables = '';
-
-        checkedBoxes.forEach(cb => {
-            const site = sitesData.find(s => (s.realKey || s.id).toString() === cb.value.toString());
-            if (site) {
-                siteNames.push(site.name);
-                let wMap = {}; let eList = [];
-                if (site.workers) {
-                    let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-                    wList.forEach(w => {
-                        let dStr = new Date(w.date).toLocaleDateString('en-CA');
-                        if ((!startStr || dStr >= startStr) && (!endStr || dStr <= endStr)) {
-                            totalW++; totalN = safeAdd(totalN, 2);
-                            let cName = cleanWorkerName(w.name);
-                            if(!wMap[cName]) wMap[cName] = new Set();
-                            wMap[cName].add(dStr);
-                        }
-                    });
-                }
-                if (site.expenses) {
-                    let exList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-                    exList.forEach(e => {
-                        let dStr = new Date(e.date).toLocaleDateString('en-CA');
-                        if ((!startStr || dStr >= startStr) && (!endStr || dStr <= endStr)) {
-                            if (e.amount && (!e.desc || !e.desc.includes("نثرية تلقائية"))) {
-                                totalE = safeAdd(totalE, e.amount);
-                                eList.push({ desc: e.desc, amount: e.amount, by: e.by });
-                            }
-                        }
-                    });
-                }
-                if(Object.keys(wMap).length > 0 || eList.length > 0) {
-                    htmlTables += `<div class="section" style="border:2px solid #2980b9;"><h3>🏗️ موقع: ${site.name}</h3>`;
-                    if(Object.keys(wMap).length > 0) {
-                        htmlTables += `<table><thead><tr><th>العامل</th><th>أيام الحضور</th></tr></thead><tbody>`;
-                        Object.keys(wMap).forEach(w => { htmlTables += `<tr><td>${w}</td><td>${toArabicDisplay(wMap[w].size)} يوم</td></tr>`; });
-                        htmlTables += `</tbody></table>`;
-                    }
-                    htmlTables += `</div>`;
-                }
-            }
-        });
-        Jack.innerHTML = `<div class="total-box" style="color:#c0392b;">إجمالي الحساب النهائي = ${toArabicDisplay(safeAdd(totalN, totalE))}</div>${htmlTables}`;
-    }
-    
-    function openSiteDetails(siteId) { 
-        activeSiteId = siteId.toString(); 
-        showScreen('screen-site-details'); 
-        renderSiteData(); 
-    }
+    function openSiteDetails(id) { activeSiteId = id.toString(); showScreen('screen-site-details'); renderSiteData(); }
     
     function renderSiteData() {
-        const site = sitesData.find(s => (s.realKey || s.id).toString() === activeSiteId); 
-        if(!site) return; 
-        document.getElementById('current-site-title').innerText = `🏗️ موقع: ${site.name}`;
+        let s = sitesData.find(x => (x.realKey || x.id).toString() === activeSiteId); if(!s) return;
+        document.getElementById('current-site-title').innerText = `🏗️ موقع: ${s.name}`;
         
-        const expBody = document.getElementById('table-expense-body'); if(!expBody) return;
-        expBody.innerHTML = ''; let genExp = 0;
-        if (site.expenses) { 
-            let eList = Array.isArray(site.expenses) ? site.expenses : Object.values(site.expenses);
-            eList.forEach((e, idx) => { 
-                if (e && e.desc && !e.desc.includes("نثرية تلقائية") && isRecordFromToday(e.date)) { 
-                    genExp = safeAdd(genExp, e.amount); 
-                    expBody.innerHTML += `<tr><td>${e.desc}</td><td>${toArabicDisplay(e.amount)}</td><td>${e.by || ''}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteExpense(${idx})">❌</button></td></tr>`; 
-                } 
-            }); 
-        }
-        
-        const workerBody = document.getElementById('table-attendance-body'); if(!workerBody) return;
-        workerBody.innerHTML = ''; let wCount = 0;
-        if (site.workers) { 
-            let wList = Array.isArray(site.workers) ? site.workers : Object.values(site.workers);
-            wList.forEach((w, idx) => { 
-                if (w && isRecordFromToday(w.date)) { 
-                    wCount++; 
-                    workerBody.innerHTML += `<tr><td>${cleanWorkerName(w.name)}</td><td>${new Date(w.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteWorker(${idx}, '${w.name}')">❌</button></td></tr>`; 
-                } 
-            }); 
-        }
-        let nathria = wCount * 2; 
-        document.getElementById('site-bottom-totals').innerHTML = `مجموع اليوم الحالي = ${toArabicDisplay(safeAdd(nathria, genExp))}`;
-    }
-    
-    function submitAttendance() {
-        const name = cleanWorkerName(document.getElementById('worker-name').value);
-        if(!name || !activeSiteId) return;
-        const now = new Date().toISOString(); 
-        database.ref('sites/' + activeSiteId + '/workers').push({ name: name, date: now });
-        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: `نثرية تلقائية للعامل (${name})`, amount: 2, date: now, by: currentUser.displayName }).then(() => {
-            document.getElementById('worker-name').value = '';
+        let expBody = document.getElementById('table-expense-body'); expBody.innerHTML = ''; let genExp = 0;
+        s.expenses?.forEach((e, idx) => {
+            if(e && e.desc && !e.desc.includes('نثرية تلقائية') && isToday(e.date)) {
+                genExp = safeAdd(genExp, e.amount);
+                expBody.innerHTML += `<tr><td>${e.desc}</td><td>${toArabic(e.amount)}</td><td>${e.by||''}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteExpense(${idx})">❌</button></td></tr>`;
+            }
         });
+
+        let wBody = document.getElementById('table-attendance-body'); wBody.innerHTML = ''; let wCount = 0;
+        s.workers?.forEach((w, idx) => {
+            if(w && isToday(w.date)) {
+                wCount++;
+                wBody.innerHTML += `<tr><td>${cleanWorkerName(w.name)}</td><td>${new Date(w.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteWorker(${idx}, '${w.name}')">❌</button></td></tr>`;
+            }
+        });
+        document.getElementById('site-bottom-totals').innerHTML = `مجموع اليوم = ${toArabic(safeAdd(wCount*2, genExp))}`;
+    }
+
+    function submitAttendance() {
+        let name = cleanWorkerName(document.getElementById('worker-name').value); if(!name || !activeSiteId) return;
+        let now = new Date().toISOString();
+        database.ref('sites/' + activeSiteId + '/workers').push({ name: name, date: now });
+        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: `نثرية تلقائية للعامل (${name})`, amount: 2, date: now, by: currentUser.displayName });
+        document.getElementById('worker-name').value = '';
     }
 
     function submitExpense() {
-        const desc = document.getElementById('expense-desc').value.trim(); 
-        const amount = cleanAndFormatNumber(document.getElementById('expense-amount').value.trim()); 
+        let desc = document.getElementById('expense-desc').value.trim();
+        let amount = cleanNum(document.getElementById('expense-amount').value);
         if(!desc || amount <= 0 || !activeSiteId) return;
-        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: desc, amount: amount, date: new Date().toISOString(), by: currentUser.displayName }).then(() => {
-            document.getElementById('expense-desc').value = ''; 
-            document.getElementById('expense-amount').value = '';
+        database.ref('sites/' + activeSiteId + '/expenses').push({ desc: desc, amount: amount, date: new Date().toISOString(), by: currentUser.displayName });
+        document.getElementById('expense-desc').value = ''; document.getElementById('expense-amount').value = '';
+    }
+
+    function deleteExpense(idx) {
+        let s = sitesData.find(x => (x.realKey || x.id).toString() === activeSiteId); if(!s) return;
+        let list = Array.isArray(s.expenses) ? s.expenses : Object.values(s.expenses);
+        list.splice(idx, 1); database.ref('sites/' + activeSiteId + '/expenses').set(list);
+    }
+
+    function deleteWorker(idx, wName) {
+        let s = sitesData.find(x => (x.realKey || x.id).toString() === activeSiteId); if(!s || !confirm(`حذف العامل ${wName}؟`)) return;
+        let wList = Array.isArray(s.workers) ? s.workers : Object.values(s.workers);
+        let eList = Array.isArray(s.expenses) ? s.expenses : Object.values(s.expenses);
+        wList.splice(idx, 1);
+        let eIdx = eList.findIndex(e => e && e.desc === `نثرية تلقائية للعامل (${wName})` && isToday(e.date));
+        if(eIdx !== -1) eList.splice(eIdx, 1);
+        database.ref('sites/' + activeSiteId).update({ workers: wList, expenses: eList });
+    }
+
+    function renderMainLoansData() {
+        let body = document.getElementById('table-main-loan-body'); body.innerHTML = ''; let total = 0;
+        globalLoans.forEach((l, idx) => {
+            if(isToday(l.date)) {
+                total = safeAdd(total, l.amount);
+                body.innerHTML += `<tr><td>${cleanWorkerName(l.worker)}</td><td>${toArabic(l.amount)}</td><td>${l.by}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteLoan(${idx})">❌</button></td></tr>`;
+            }
+        });
+        document.getElementById('main-loan-today-total').innerText = `إجمالي سلف اليوم = ${toArabic(total)}`;
+    }
+
+    function submitMainLoan() {
+        let worker = cleanWorkerName(document.getElementById('main-loan-worker-name').value);
+        let amount = cleanNum(document.getElementById('main-loan-amount').value);
+        if(!worker || amount <= 0) return;
+        globalLoans.push({ worker: worker, amount: amount, date: new Date().toISOString(), by: currentUser.displayName });
+        database.ref('globalLoans').set(globalLoans);
+        document.getElementById('main-loan-worker-name').value = ''; document.getElementById('main-loan-amount').value = '';
+    }
+    function deleteLoan(idx) { globalLoans.splice(idx, 1); database.ref('globalLoans').set(globalLoans); }
+
+    function renderMainMaterialsData() {
+        let body = document.getElementById('table-main-material-body'); body.innerHTML = ''; let total = 0;
+        globalMaterials.forEach((m, idx) => {
+            if(isToday(m.date)) {
+                total = safeAdd(total, m.amount);
+                body.innerHTML += `<tr><td>${m.name}</td><td>${toArabic(m.amount)}</td><td>${m.by}</td><td><button class="btn-delete" style="padding:4px;" onclick="deleteMaterial(${idx})">❌</button></td></tr>`;
+            }
+        });
+        document.getElementById('main-material-today-total').innerText = `إجمالي مواد اليوم = ${toArabic(total)}`;
+    }
+
+    function submitMainMaterial() {
+        let name = document.getElementById('main-material-name').value.trim();
+        let amount = cleanNum(document.getElementById('main-material-amount').value);
+        if(!name || amount <= 0) return;
+        globalMaterials.push({ name: name, amount: amount, date: new Date().toISOString(), by: currentUser.displayName });
+        database.ref('globalMaterials').set(globalMaterials);
+        document.getElementById('main-material-name').value = ''; document.getElementById('main-material-amount').value = '';
+    }
+    function deleteMaterial(idx) { globalMaterials.splice(idx, 1); database.ref('globalMaterials').set(globalMaterials); }
+
+    function renderJardCheckboxes() {
+        let c = document.getElementById('jard-checkboxes-container'); c.innerHTML = '';
+        sitesData.forEach(s => {
+            c.innerHTML += `<label style="background:#fff; padding:8px; border-radius:6px; border:1px solid #ddd; display:flex; gap:6px; align-items:center; cursor:pointer;"><input type="checkbox" value="${s.realKey || s.id}" checked onchange="calculateMultiSelectJard()"> 🏗️ ${s.name}</label>`;
         });
     }
 
-    (function() {
-        // حماية تامة من أي توقف بالمتصفح
-        window.onerror = function() { return true; };
-    })();
+    function calculateMultiSelectJard() {
+        let checked = document.querySelectorAll('#jard-checkboxes-container input:checked');
+        let res = document.getElementById('jard-dashboard-results');
+        if(checked.length === 0) { res.innerHTML = "<div class='total-box'>حدد موقعاً!</div>"; return; }
+        res.innerHTML = "<div class='total-box'>جاري الحساب...</div>";
+    }
 </script>
 </body>
 </html>
